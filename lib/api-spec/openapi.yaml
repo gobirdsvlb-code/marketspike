@@ -1,0 +1,886 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Market Spike API – gamified investing for kids and teens
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: users
+    description: User profile and onboarding
+  - name: market
+    description: Stock market data
+  - name: portfolio
+    description: User holdings and trades
+  - name: learn
+    description: Educational lessons
+  - name: achievements
+    description: Achievements and badges
+  - name: leaderboard
+    description: Global leaderboard
+  - name: stats
+    description: Dashboard summaries
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /users/me/use-life:
+    post:
+      operationId: useLife
+      tags: [users]
+      summary: Deduct one life for a wrong answer
+      responses:
+        "200":
+          description: Remaining lives
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UseLiveResult"
+
+  /friends:
+    get:
+      operationId: listFriends
+      tags: [users]
+      summary: List friends and pending requests
+      responses:
+        "200":
+          description: Friends list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FriendEntry"
+
+  /friends/add:
+    post:
+      operationId: addFriend
+      tags: [users]
+      summary: Add a friend by username
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFriendRequest"
+      responses:
+        "200":
+          description: New friend entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FriendEntry"
+
+  /friends/{id}:
+    delete:
+      operationId: removeFriend
+      tags: [users]
+      summary: Remove a friend
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /game/river:
+    get:
+      operationId: getRiverCrossing
+      tags: [learn]
+      summary: Get a set of questions for the river crossing game
+      responses:
+        "200":
+          description: River crossing questions and current lives
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiverCrossing"
+
+  /users/me:
+    get:
+      operationId: getCurrentUser
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    patch:
+      operationId: updateCurrentUser
+      tags: [users]
+      summary: Update current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /market/stocks:
+    get:
+      operationId: listStocks
+      tags: [market]
+      summary: List all stocks with current prices
+      parameters:
+        - name: sector
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of stocks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Stock"
+
+  /market/stocks/{symbol}:
+    get:
+      operationId: getStock
+      tags: [market]
+      summary: Get stock detail with price history
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Stock detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StockDetail"
+
+  /portfolio/holdings:
+    get:
+      operationId: getHoldings
+      tags: [portfolio]
+      summary: Get current user portfolio holdings
+      responses:
+        "200":
+          description: Portfolio holdings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Holding"
+
+  /portfolio/trades:
+    get:
+      operationId: listTrades
+      tags: [portfolio]
+      summary: Get trade history for current user
+      responses:
+        "200":
+          description: Trade history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trade"
+    post:
+      operationId: executeTrade
+      tags: [portfolio]
+      summary: Buy or sell a stock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TradeInput"
+      responses:
+        "201":
+          description: Trade executed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trade"
+        "400":
+          description: Invalid trade (insufficient funds, invalid quantity)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /learn/lessons/{lessonId}/questions:
+    get:
+      operationId: getLessonQuestions
+      tags: [learn]
+      summary: Get all questions for a lesson (includes correct answers for client-side checking)
+      parameters:
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lesson questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LessonQuestion"
+
+  /learn/curriculum:
+    get:
+      operationId: getCurriculum
+      tags: [learn]
+      summary: Get the full structured curriculum grouped by stage and level
+      responses:
+        "200":
+          description: Curriculum stages with levels and lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CurriculumStage"
+
+  /learn/lessons:
+    get:
+      operationId: listLessons
+      tags: [learn]
+      summary: List all educational lessons
+      responses:
+        "200":
+          description: Lessons list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lesson"
+
+  /learn/lessons/{lessonId}/complete:
+    post:
+      operationId: completeLesson
+      tags: [learn]
+      summary: Mark a lesson as complete and award XP
+      parameters:
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lesson completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonCompletion"
+
+  /achievements:
+    get:
+      operationId: listAchievements
+      tags: [achievements]
+      summary: List all available achievements
+      responses:
+        "200":
+          description: Achievements list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Achievement"
+
+  /achievements/me:
+    get:
+      operationId: getMyAchievements
+      tags: [achievements]
+      summary: Get achievements earned by current user
+      responses:
+        "200":
+          description: Earned achievements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAchievement"
+
+  /leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [leaderboard]
+      summary: Get top investors leaderboard
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaderboardEntry"
+
+  /stats/portfolio-summary:
+    get:
+      operationId: getPortfolioSummary
+      tags: [stats]
+      summary: Portfolio summary – total value, gain/loss, daily change
+      responses:
+        "200":
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioSummary"
+
+  /stats/activity-feed:
+    get:
+      operationId: getActivityFeed
+      tags: [stats]
+      summary: Recent activity feed (trades, lessons, achievements)
+      responses:
+        "200":
+          description: Activity items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /stats/market-movers:
+    get:
+      operationId: getMarketMovers
+      tags: [stats]
+      summary: Top gaining and losing stocks today
+      responses:
+        "200":
+          description: Market movers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketMovers"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        avatarColor:
+          type: string
+          description: Hex color for avatar background
+        bio:
+          type: string
+        balance:
+          type: number
+          description: Virtual cash balance in dollars
+        xp:
+          type: integer
+        level:
+          type: integer
+        streak:
+          type: integer
+          description: Daily login streak in days
+        lives:
+          type: integer
+          description: Lives remaining today (max 5, resets daily)
+        coins:
+          type: integer
+          description: Spike Coin balance
+        tier:
+          type: string
+          description: Subscription tier — free | pro | elite
+        unlockedColors:
+          type: array
+          items:
+            type: string
+          description: Premium avatar colors the user has unlocked
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, username, avatarColor, bio, balance, xp, level, streak, lives, coins, tier, unlockedColors, createdAt]
+
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        avatarUrl:
+          type: string
+        avatarColor:
+          type: string
+        bio:
+          type: string
+
+    UseLiveResult:
+      type: object
+      properties:
+        lives:
+          type: integer
+        outOfLives:
+          type: boolean
+      required: [lives, outOfLives]
+
+    FriendEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        username:
+          type: string
+        avatarColor:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        xp:
+          type: integer
+        level:
+          type: integer
+        status:
+          type: string
+          enum: [pending, accepted]
+        direction:
+          type: string
+          enum: [sent, received]
+      required: [id, userId, username, avatarColor, xp, level, status, direction]
+
+    AddFriendRequest:
+      type: object
+      properties:
+        username:
+          type: string
+      required: [username]
+
+    RiverCrossing:
+      type: object
+      properties:
+        lives:
+          type: integer
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/LessonQuestion"
+      required: [lives, questions]
+
+    Stock:
+      type: object
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        change:
+          type: number
+          description: Price change today (dollars)
+        changePercent:
+          type: number
+          description: Price change today (percent)
+        sector:
+          type: string
+        logoUrl:
+          type: ["string", "null"]
+        marketCap:
+          type: ["string", "null"]
+          description: Human-readable market cap (e.g. "$2.5T")
+      required: [id, symbol, name, price, change, changePercent, sector]
+
+    StockDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        change:
+          type: number
+        changePercent:
+          type: number
+        sector:
+          type: string
+        logoUrl:
+          type: ["string", "null"]
+        marketCap:
+          type: ["string", "null"]
+        description:
+          type: string
+        priceHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/PricePoint"
+      required: [id, symbol, name, price, change, changePercent, sector, description, priceHistory]
+
+    PricePoint:
+      type: object
+      properties:
+        date:
+          type: string
+        price:
+          type: number
+      required: [date, price]
+
+    Holding:
+      type: object
+      properties:
+        id:
+          type: integer
+        stockId:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        logoUrl:
+          type: ["string", "null"]
+        quantity:
+          type: number
+        avgBuyPrice:
+          type: number
+        currentPrice:
+          type: number
+        currentValue:
+          type: number
+        gainLoss:
+          type: number
+        gainLossPercent:
+          type: number
+      required: [id, stockId, symbol, name, quantity, avgBuyPrice, currentPrice, currentValue, gainLoss, gainLossPercent]
+
+    TradeInput:
+      type: object
+      properties:
+        stockId:
+          type: integer
+        type:
+          type: string
+          enum: [buy, sell]
+        quantity:
+          type: number
+      required: [stockId, type, quantity]
+
+    Trade:
+      type: object
+      properties:
+        id:
+          type: integer
+        stockId:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [buy, sell]
+        quantity:
+          type: number
+        price:
+          type: number
+        total:
+          type: number
+        executedAt:
+          type: string
+          format: date-time
+      required: [id, stockId, symbol, name, type, quantity, price, total, executedAt]
+
+    Lesson:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        stage:
+          type: string
+          enum: [easy, medium, hard]
+        category:
+          type: string
+          enum: [equities, etfs, key_terms]
+        levelNumber:
+          type: integer
+          description: "1=Equities, 2=ETFs & Mutual Funds, 3=Key Terms within stage"
+        sortOrder:
+          type: integer
+        xpReward:
+          type: integer
+        durationMinutes:
+          type: integer
+        completed:
+          type: boolean
+          description: Whether the current user has completed this lesson
+        icon:
+          type: string
+      required: [id, title, description, difficulty, stage, category, levelNumber, sortOrder, xpReward, durationMinutes, completed, icon]
+
+    LessonQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        lessonId:
+          type: integer
+        question:
+          type: string
+        type:
+          type: string
+          enum: [multiple_choice, true_false]
+        options:
+          type: ["array", "null"]
+          items:
+            type: string
+          description: Answer choices for multiple_choice; null for true_false
+        correctAnswer:
+          type: string
+          description: The correct option text, or 'true'/'false'
+        explanation:
+          type: string
+        sortOrder:
+          type: integer
+      required: [id, lessonId, question, type, correctAnswer, explanation, sortOrder]
+
+    CurriculumLevel:
+      type: object
+      properties:
+        stage:
+          type: string
+          enum: [easy, medium, hard]
+        stageLabel:
+          type: string
+        category:
+          type: string
+          enum: [equities, etfs, key_terms]
+        categoryLabel:
+          type: string
+        levelNumber:
+          type: integer
+        lessons:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lesson"
+        totalLessons:
+          type: integer
+        completedLessons:
+          type: integer
+        isUnlocked:
+          type: boolean
+      required: [stage, stageLabel, category, categoryLabel, levelNumber, lessons, totalLessons, completedLessons, isUnlocked]
+
+    CurriculumStage:
+      type: object
+      properties:
+        stage:
+          type: string
+          enum: [easy, medium, hard]
+        stageLabel:
+          type: string
+        stageNumber:
+          type: integer
+        isUnlocked:
+          type: boolean
+        levels:
+          type: array
+          items:
+            $ref: "#/components/schemas/CurriculumLevel"
+      required: [stage, stageLabel, stageNumber, isUnlocked, levels]
+
+    LessonCompletion:
+      type: object
+      properties:
+        xpEarned:
+          type: integer
+        newLevel:
+          type: integer
+        leveledUp:
+          type: boolean
+        newAchievements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Achievement"
+      required: [xpEarned, newLevel, leveledUp, newAchievements]
+
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        xpReward:
+          type: integer
+        rarity:
+          type: string
+          enum: [common, rare, epic, legendary]
+      required: [id, name, description, icon, xpReward, rarity]
+
+    UserAchievement:
+      type: object
+      properties:
+        id:
+          type: integer
+        achievement:
+          $ref: "#/components/schemas/Achievement"
+        earnedAt:
+          type: string
+          format: date-time
+      required: [id, achievement, earnedAt]
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+        userId:
+          type: integer
+        username:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        avatarColor:
+          type: string
+        level:
+          type: integer
+        xp:
+          type: integer
+        streak:
+          type: integer
+      required: [rank, userId, username, avatarColor, level, xp, streak]
+
+    PortfolioSummary:
+      type: object
+      properties:
+        totalValue:
+          type: number
+          description: Cash + holdings value
+        holdingsValue:
+          type: number
+        cashBalance:
+          type: number
+        totalGainLoss:
+          type: number
+        totalGainLossPercent:
+          type: number
+        dailyChange:
+          type: number
+        dailyChangePercent:
+          type: number
+        startingBalance:
+          type: number
+      required: [totalValue, holdingsValue, cashBalance, totalGainLoss, totalGainLossPercent, dailyChange, dailyChangePercent, startingBalance]
+
+    ActivityItem:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [trade, lesson, achievement, levelup]
+        title:
+          type: string
+        description:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        icon:
+          type: string
+      required: [id, type, title, description, timestamp, icon]
+
+    MarketMovers:
+      type: object
+      properties:
+        gainers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Stock"
+        losers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Stock"
+      required: [gainers, losers]

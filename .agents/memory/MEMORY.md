@@ -1,0 +1,1 @@
+- [Auth & Session Architecture](auth-session.md) — migrated to Clerk; express-session/bcrypt removed; JIT provisioning on first sign-in.

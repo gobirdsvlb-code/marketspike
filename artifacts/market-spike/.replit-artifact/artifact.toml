@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Market Spike"
+version = "1.0.0"
+id = "artifacts/market-spike"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19776
+
+[services.development]
+run = "pnpm --filter @workspace/market-spike run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/market-spike", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/market-spike/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19776"
+BASE_PATH = "/"

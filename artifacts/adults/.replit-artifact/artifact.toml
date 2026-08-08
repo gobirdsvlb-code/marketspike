@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/adults/"
+title = "Market Spike for Adults"
+description = "A standalone marketing landing page targeting parents, guardians, and educators. Explains the benefits of Market Spike for kids, shows statistics on financial literacy, and drives sign-ups to the main Market Spike app."
+version = "1.0.0"
+id = "artifacts/adults"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/adults/" ]
+localPort = 19431
+
+[services.development]
+run = "pnpm --filter @workspace/adults run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/adults", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/adults/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19431"
+BASE_PATH = "/adults/"

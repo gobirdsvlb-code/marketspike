@@ -1,0 +1,9 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "s_XEITpabcv6s5qfHD7Ie"
+uri = "file://market-spike-adults.zip"
+type = "unspecified"
+title = "Market Spike for Adults — Standalone Site"
+description = "Drop these files into your new Replit project. Run npm install then npm run dev to start."
