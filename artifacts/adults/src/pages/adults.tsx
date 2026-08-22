@@ -56,7 +56,7 @@ function Nav() {
           <img src="/adults/logo.svg" alt="Market Spike" className="w-9 h-9 rounded-xl" />
           <span className="font-black text-white text-lg tracking-tight">Market Spike</span>
         </a>
-        <a href="/sign-up" className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-400/25 no-underline">
+        <a href="/home" className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-400/25 no-underline">
           Get Started Free
         </a>
       </div>
@@ -271,7 +271,7 @@ export default function Adults() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4"
           >
-            <a href="/sign-up" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-lg px-8 py-4 rounded-2xl transition-all shadow-2xl shadow-amber-400/30 no-underline">
+            <a href="/home" className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-lg px-8 py-4 rounded-2xl transition-all shadow-2xl shadow-amber-400/30 no-underline">
               Start Free Today
               <ArrowRight className="w-5 h-5" />
             </a>
@@ -517,7 +517,7 @@ export default function Adults() {
               The best time to plant a tree was 20 years ago. The second best time is today. Start your child's financial education — completely free.
             </p>
 
-            <a href="/sign-up" className="inline-flex items-center gap-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xl px-10 py-5 rounded-2xl transition-all shadow-2xl shadow-amber-400/30 no-underline">
+            <a href="/home" className="inline-flex items-center gap-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xl px-10 py-5 rounded-2xl transition-all shadow-2xl shadow-amber-400/30 no-underline">
               Create Free Account
               <ChevronRight className="w-6 h-6" />
             </a>
