@@ -7,3 +7,10 @@ uri = "file://market-spike-adults.zip"
 type = "unspecified"
 title = "Market Spike for Adults — Standalone Site"
 description = "Drop these files into your new Replit project. Run npm install then npm run dev to start."
+
+[[outputs]]
+id = "3gOg_zGtEGEggCrZRM1Y7"
+uri = "file://marketspike-app-functionality.zip"
+type = "unspecified"
+title = "MarketSpike app functionality"
+description = "Source and configuration ZIP containing the main app, adult variant, shared API server, database libraries, API definitions, assets, and workspace setup. Dependencies, build output, caches, Git data, and secrets are excluded."
