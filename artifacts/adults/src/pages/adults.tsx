@@ -251,9 +251,9 @@ export default function Adults() {
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">
               Investors Started Young.
+              <br />
+              Will Yours?
             </span>
-            <br />
-            Will Yours?
           </motion.h1>
 
           <motion.p
