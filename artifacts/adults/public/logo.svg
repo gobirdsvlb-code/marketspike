@@ -1,5 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
-  <rect width="80" height="80" rx="20" fill="#6366f1"/>
-  <text x="40" y="52" font-size="38" text-anchor="middle" dominant-baseline="middle">🐂</text>
-  <text x="40" y="68" font-size="9" font-family="system-ui,sans-serif" font-weight="900" text-anchor="middle" fill="white" letter-spacing="1">SPIKE</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" rx="44" fill="#4338ca"/>
+
+  <!-- Horns -->
+  <path d="M50 70 C30 70 20 50 30 30 C50 20 70 40 70 40" fill="#fde047" stroke="#ca8a04" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M150 70 C170 70 180 50 170 30 C150 20 130 40 130 40" fill="#fde047" stroke="#ca8a04" stroke-width="4" stroke-linejoin="round"/>
+
+  <!-- Ears -->
+  <path d="M50 90 C30 90 20 100 30 110 C40 115 50 110 60 100" fill="#6366f1"/>
+  <path d="M150 90 C170 90 180 100 170 110 C160 115 150 110 140 100" fill="#6366f1"/>
+
+  <!-- Head -->
+  <path d="M55 60 C55 30 145 30 145 60 C155 100 130 150 100 150 C70 150 45 100 55 60 Z" fill="#818cf8" stroke="#3730a3" stroke-width="4"/>
+
+  <!-- Snout -->
+  <ellipse cx="100" cy="115" rx="35" ry="25" fill="#e0e7ff" stroke="#c7d2fe" stroke-width="2"/>
+
+  <!-- Nostrils -->
+  <ellipse cx="85" cy="105" rx="4" ry="6" fill="#1e293b"/>
+  <ellipse cx="115" cy="105" rx="4" ry="6" fill="#1e293b"/>
+
+  <!-- Brows -->
+  <path d="M65 50 L80 50 M135 50 L120 50" stroke="white" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Eyes -->
+  <circle cx="75" cy="65" r="5" fill="white"/>
+  <circle cx="125" cy="65" r="5" fill="white"/>
+
+  <!-- Mouth -->
+  <path d="M90 115 Q100 125 110 115" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Hair tuft -->
+  <path d="M90 35 C95 25 105 25 110 35 C115 25 105 15 100 15 C95 15 85 25 90 35 Z" fill="#818cf8"/>
 </svg>
