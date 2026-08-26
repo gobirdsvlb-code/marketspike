@@ -101,6 +101,15 @@ export default function Trade() {
   const holdingsValue = holdings?.reduce((s, h) => s + h.currentValue, 0) ?? 0;
   const totalPortfolio = userBalance + holdingsValue;
 
+  // Allocation-weighted daily return across all holdings
+  // For each stock: weight = currentValue / totalPortfolio; contribution = weight * todayChangePercent
+  const portfolioDailyChangePercent = totalPortfolio > 0 && holdings
+    ? holdings.reduce((sum, h) => sum + (h.currentValue / totalPortfolio) * ((h as any).todayChangePercent ?? 0), 0)
+    : 0;
+  const portfolioDailyChangeDollar = holdings
+    ? holdings.reduce((sum, h) => sum + h.quantity * ((h as any).todayChange ?? 0), 0)
+    : 0;
+
   function selectStock(symbol: string) {
     setSelectedSymbol(symbol);
     setErrorMsg('');
@@ -279,47 +288,67 @@ export default function Trade() {
     </>
   );
 
-  const PortfolioSummary = ({ compact = false }: { compact?: boolean }) => (
-    <div className="bg-card border-2 border-border rounded-2xl p-4">
-      <div className="text-[10px] font-black uppercase text-muted-foreground mb-3">My Portfolio</div>
-      {compact ? (
-        <div className="grid grid-cols-3 gap-2 text-center">
-          {[
-            { label: 'Cash', val: `$${userBalance.toFixed(0)}` },
-            { label: 'Stocks', val: `$${holdingsValue.toFixed(0)}` },
-            { label: 'Total', val: `$${totalPortfolio.toFixed(0)}` },
-          ].map(({ label, val }) => (
-            <div key={label} className="bg-muted/40 rounded-xl p-2">
-              <div className="text-[10px] text-muted-foreground font-bold">{label}</div>
-              <div className="font-mono font-black text-sm">{val}</div>
+  const PortfolioSummary = ({ compact = false }: { compact?: boolean }) => {
+    const overallGain = totalPortfolio - 10000;
+    const overallPct  = (totalPortfolio / 10000 - 1) * 100;
+    const todayPos    = portfolioDailyChangeDollar >= 0;
+    const overallPos  = overallGain >= 0;
+
+    return (
+      <div className="bg-card border-2 border-border rounded-2xl p-4">
+        <div className="text-[10px] font-black uppercase text-muted-foreground mb-3">My Portfolio</div>
+        {compact ? (
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {[
+              { label: 'Cash',   val: `$${userBalance.toFixed(0)}` },
+              { label: 'Stocks', val: `$${holdingsValue.toFixed(0)}` },
+              { label: 'Total',  val: `$${totalPortfolio.toFixed(0)}` },
+            ].map(({ label, val }) => (
+              <div key={label} className="bg-muted/40 rounded-xl p-2">
+                <div className="text-[10px] text-muted-foreground font-bold">{label}</div>
+                <div className="font-mono font-black text-sm">{val}</div>
+              </div>
+            ))}
+            {/* Today's allocation-weighted return */}
+            {holdingsValue > 0 && (
+              <div className={`col-span-3 text-xs font-bold text-center pt-1 ${todayPos ? 'text-gain' : 'text-loss'}`}>
+                Today: {todayPos ? '+' : ''}${portfolioDailyChangeDollar.toFixed(2)} ({todayPos ? '+' : ''}{portfolioDailyChangePercent.toFixed(2)}%)
+              </div>
+            )}
+            <div className={`col-span-3 text-xs font-bold text-center pt-0.5 ${overallPos ? 'text-gain' : 'text-loss'}`}>
+              All-time: {overallPos ? '+' : ''}${overallGain.toFixed(2)} ({overallPos ? '+' : ''}{overallPct.toFixed(2)}%)
             </div>
-          ))}
-          <div className={`col-span-3 text-xs font-bold text-center pt-1 ${totalPortfolio >= 10000 ? 'text-gain' : 'text-loss'}`}>
-            Return: {totalPortfolio >= 10000 ? '+' : ''}${(totalPortfolio - 10000).toFixed(2)} ({totalPortfolio >= 10000 ? '+' : ''}{((totalPortfolio / 10000 - 1) * 100).toFixed(2)}%)
           </div>
-        </div>
-      ) : (
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground font-bold">Cash</span>
-            <span className="font-mono font-black text-xs">${userBalance.toFixed(2)}</span>
+        ) : (
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground font-bold">Cash</span>
+              <span className="font-mono font-black text-xs">${userBalance.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground font-bold">Stocks</span>
+              <span className="font-mono font-black text-xs">${holdingsValue.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-border">
+              <span className="text-xs font-black">Total</span>
+              <span className="font-mono font-black text-sm">${totalPortfolio.toFixed(2)}</span>
+            </div>
+            {/* Today's allocation-weighted return */}
+            {holdingsValue > 0 && (
+              <div className={`flex justify-between items-center text-xs font-bold ${todayPos ? 'text-gain' : 'text-loss'}`}>
+                <span>Today</span>
+                <span className="font-mono">{todayPos ? '+' : ''}${portfolioDailyChangeDollar.toFixed(2)} ({todayPos ? '+' : ''}{portfolioDailyChangePercent.toFixed(2)}%)</span>
+              </div>
+            )}
+            <div className={`flex justify-between items-center text-xs font-bold ${overallPos ? 'text-gain' : 'text-loss'}`}>
+              <span>All-time</span>
+              <span className="font-mono">{overallPos ? '+' : ''}${overallGain.toFixed(2)}</span>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground font-bold">Stocks</span>
-            <span className="font-mono font-black text-xs">${holdingsValue.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between items-center pt-2 border-t border-border">
-            <span className="text-xs font-black">Total</span>
-            <span className="font-mono font-black text-sm">${totalPortfolio.toFixed(2)}</span>
-          </div>
-          <div className={`flex justify-between items-center text-xs font-bold ${totalPortfolio >= 10000 ? 'text-gain' : 'text-loss'}`}>
-            <span>Return</span>
-            <span className="font-mono">{totalPortfolio >= 10000 ? '+' : ''}${(totalPortfolio - 10000).toFixed(2)}</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   return (
     <Layout>
@@ -416,24 +445,30 @@ export default function Trade() {
               <div className="text-[10px] font-black uppercase text-muted-foreground px-4 py-2.5 border-b border-border">
                 My Holdings ({holdings.length})
               </div>
-              {holdings.map(h => (
-                <button
-                  key={h.id}
-                  onClick={() => selectStock(h.symbol)}
-                  className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/60 transition-colors border-b border-border/40 ${h.symbol === selectedSymbol ? 'bg-primary/10' : ''}`}
-                >
-                  <div>
-                    <div className="font-black text-sm">{h.symbol}</div>
-                    <div className="text-xs text-muted-foreground font-mono">{h.quantity} shares</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-mono font-black text-sm">${h.currentValue.toFixed(0)}</div>
-                    <div className={`text-xs font-bold ${h.gainLoss >= 0 ? 'text-gain' : 'text-loss'}`}>
-                      {h.gainLoss >= 0 ? '+' : ''}{h.gainLossPercent.toFixed(1)}%
+              {holdings.map(h => {
+                const todayPct = (h as any).todayChangePercent ?? 0;
+                const weight   = totalPortfolio > 0 ? (h.currentValue / totalPortfolio) * 100 : 0;
+                const contrib  = weight * todayPct / 100; // portfolio pts this stock moved today
+                const todayPos = todayPct >= 0;
+                return (
+                  <button
+                    key={h.id}
+                    onClick={() => selectStock(h.symbol)}
+                    className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/60 transition-colors border-b border-border/40 ${h.symbol === selectedSymbol ? 'bg-primary/10' : ''}`}
+                  >
+                    <div>
+                      <div className="font-black text-sm">{h.symbol}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{weight.toFixed(1)}% of portfolio</div>
                     </div>
-                  </div>
-                </button>
-              ))}
+                    <div className="text-right">
+                      <div className="font-mono font-black text-sm">${h.currentValue.toFixed(0)}</div>
+                      <div className={`text-xs font-bold ${todayPos ? 'text-gain' : 'text-loss'}`}>
+                        {todayPos ? '+' : ''}{todayPct.toFixed(2)}% today ({todayPos ? '+' : ''}{contrib.toFixed(2)}pp)
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -521,24 +556,29 @@ export default function Trade() {
                   Holdings ({holdings.length})
                 </div>
                 <div className="overflow-y-auto flex-1">
-                  {holdings.map(h => (
-                    <button
-                      key={h.id}
-                      onClick={() => selectStock(h.symbol)}
-                      className={`w-full flex items-center justify-between px-4 py-2 text-left hover:bg-muted/60 transition-colors border-b border-border/40 text-xs ${h.symbol === selectedSymbol ? 'bg-primary/10' : ''}`}
-                    >
-                      <div>
-                        <div className="font-black">{h.symbol}</div>
-                        <div className="text-muted-foreground font-mono">{h.quantity} sh</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-mono font-black">${h.currentValue.toFixed(0)}</div>
-                        <div className={`font-bold ${h.gainLoss >= 0 ? 'text-gain' : 'text-loss'}`}>
-                          {h.gainLoss >= 0 ? '+' : ''}{h.gainLossPercent.toFixed(1)}%
+                  {holdings.map(h => {
+                    const todayPct = (h as any).todayChangePercent ?? 0;
+                    const weight   = totalPortfolio > 0 ? (h.currentValue / totalPortfolio) * 100 : 0;
+                    const todayPos = todayPct >= 0;
+                    return (
+                      <button
+                        key={h.id}
+                        onClick={() => selectStock(h.symbol)}
+                        className={`w-full flex items-center justify-between px-4 py-2 text-left hover:bg-muted/60 transition-colors border-b border-border/40 text-xs ${h.symbol === selectedSymbol ? 'bg-primary/10' : ''}`}
+                      >
+                        <div>
+                          <div className="font-black">{h.symbol}</div>
+                          <div className="text-muted-foreground font-mono">{weight.toFixed(1)}%</div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                        <div className="text-right">
+                          <div className="font-mono font-black">${h.currentValue.toFixed(0)}</div>
+                          <div className={`font-bold ${todayPos ? 'text-gain' : 'text-loss'}`}>
+                            {todayPos ? '+' : ''}{todayPct.toFixed(2)}%
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

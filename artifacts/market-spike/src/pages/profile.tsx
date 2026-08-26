@@ -31,8 +31,8 @@ const PREMIUM_AVATARS = [
   { id: '🎭', name: 'Mask'      },
 ];
 
-const AVATAR_COST = 100;
-const CAMERA_COST = 2000;
+const AVATAR_COST_BASE = 10_000; // 1st emoji costs 10k, each additional +10k more
+const CAMERA_COST = 100_000;
 
 /* ─── helpers ────────────────────────────────────────────── */
 function AvatarPreview({
@@ -221,6 +221,9 @@ export default function Profile() {
   /* buy an emoji avatar or the camera slot */
   const handleBuyAvatar = async (avatarId: string) => {
     setBuyingId(avatarId);
+    // Snapshot unlocked emoji count BEFORE the purchase to compute the correct cost
+    const unlockedEmojis = (unlockedAvatars ?? []).filter((a: string) => a !== 'camera');
+    const costPaid = avatarId === 'camera' ? CAMERA_COST : AVATAR_COST_BASE * (unlockedEmojis.length + 1);
     try {
       const r    = await fetch('/api/users/me/buy-avatar', {
         method: 'POST', credentials: 'include',
@@ -229,8 +232,7 @@ export default function Profile() {
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error);
-      const cost = avatarId === 'camera' ? CAMERA_COST : AVATAR_COST;
-      toast.success(`🪙 Unlocked! −${cost} coins`);
+      toast.success(`🪙 Unlocked! −${costPaid.toLocaleString()} coins`);
       queryClient.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
     } catch (e: any) {
       toast.error(e.message || 'Purchase failed');
@@ -385,50 +387,57 @@ export default function Profile() {
               </div>
 
               {/* Emoji grid */}
-              <div className="grid grid-cols-5 gap-4 mb-8">
-                {PREMIUM_AVATARS.map(({ id: emoji, name }) => {
-                  const isUnlocked = unlockedAvatars.includes(emoji);
-                  const isActive   = avatarUrl === emoji;
-                  const isBuying   = buyingId === emoji;
+              {(() => {
+                // Next purchase price escalates: 10k × (emojis already owned + 1)
+                const emojiOwnedCount = unlockedAvatars.filter((a: string) => a !== 'camera').length;
+                const nextAvatarCost  = AVATAR_COST_BASE * (emojiOwnedCount + 1);
+                return (
+                  <div className="grid grid-cols-5 gap-4 mb-8">
+                    {PREMIUM_AVATARS.map(({ id: emoji, name }) => {
+                      const isUnlocked = unlockedAvatars.includes(emoji);
+                      const isActive   = avatarUrl === emoji;
+                      const isBuying   = buyingId === emoji;
 
-                  return (
-                    <div key={emoji} className="flex flex-col items-center gap-1.5">
-                      <button
-                        onClick={() => {
-                          if (isUnlocked) handleSelectEmoji(emoji);
-                          else if (!isBuying) handleBuyAvatar(emoji);
-                        }}
-                        disabled={isBuying}
-                        className={`relative w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-all
-                          ${isActive  ? 'ring-4 ring-primary ring-offset-2 ring-offset-card scale-110' : 'hover:scale-105'}
-                          ${isUnlocked ? 'bg-muted/60' : 'bg-muted/30 opacity-70'}
-                        `}
-                      >
-                        <span className="leading-none">{emoji}</span>
-                        {!isUnlocked && !isBuying && (
-                          <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-black/25">
-                            <Lock className="w-4 h-4 text-white drop-shadow" />
-                          </div>
-                        )}
-                        {isBuying && (
-                          <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-black/30">
-                            <Loader2 className="w-4 h-4 text-white animate-spin" />
-                          </div>
-                        )}
-                      </button>
-                      <span className="text-xs font-bold text-foreground leading-tight text-center">{name}</span>
-                      {isUnlocked ? (
-                        <span className="text-xs text-green-500 font-bold">Owned</span>
-                      ) : (
-                        <div className="flex items-center gap-0.5">
-                          <Coins className="w-2.5 h-2.5 text-yellow-500" />
-                          <span className="text-xs font-black text-yellow-600">{AVATAR_COST}</span>
+                      return (
+                        <div key={emoji} className="flex flex-col items-center gap-1.5">
+                          <button
+                            onClick={() => {
+                              if (isUnlocked) handleSelectEmoji(emoji);
+                              else if (!isBuying) handleBuyAvatar(emoji);
+                            }}
+                            disabled={isBuying}
+                            className={`relative w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-all
+                              ${isActive  ? 'ring-4 ring-primary ring-offset-2 ring-offset-card scale-110' : 'hover:scale-105'}
+                              ${isUnlocked ? 'bg-muted/60' : 'bg-muted/30 opacity-70'}
+                            `}
+                          >
+                            <span className="leading-none">{emoji}</span>
+                            {!isUnlocked && !isBuying && (
+                              <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-black/25">
+                                <Lock className="w-4 h-4 text-white drop-shadow" />
+                              </div>
+                            )}
+                            {isBuying && (
+                              <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-black/30">
+                                <Loader2 className="w-4 h-4 text-white animate-spin" />
+                              </div>
+                            )}
+                          </button>
+                          <span className="text-xs font-bold text-foreground leading-tight text-center">{name}</span>
+                          {isUnlocked ? (
+                            <span className="text-xs text-green-500 font-bold">Owned</span>
+                          ) : (
+                            <div className="flex items-center gap-0.5">
+                              <Coins className="w-2.5 h-2.5 text-yellow-500" />
+                              <span className="text-xs font-black text-yellow-600">{(nextAvatarCost / 1000).toFixed(0)}k</span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
 
               {/* Camera / Selfie avatar */}
               {(() => {

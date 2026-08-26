@@ -13,6 +13,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import River from './pages/river';
 import XpHunt from './pages/xp-hunt';
 import Home from './pages/home';
+import Landing from './pages/landing';
 import Profile from './pages/profile';
 import Friends from './pages/friends';
 import Learn from './pages/learn';
@@ -200,7 +201,7 @@ function ClerkQueryClientCacheInvalidator() {
 function AppRoutes() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Landing} />
       <Route path="/home" component={Home} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/upgrade" component={Upgrade} />

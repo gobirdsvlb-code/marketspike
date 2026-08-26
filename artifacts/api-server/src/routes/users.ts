@@ -13,8 +13,9 @@ function todayDate() {
 export const PREMIUM_AVATARS = [
   '🦁','🐯','🦊','🐺','🦄','🐲','🦅','🐬','🦖','🤖','👾','🔥','⚡','💎','🎭',
 ];
-export const AVATAR_COST  = 100;
-export const CAMERA_COST  = 2000;
+export const AVATAR_COST_BASE = 10_000; // price of 1st emoji; each subsequent unlock costs +10,000 more
+export const AVATAR_COST  = AVATAR_COST_BASE; // kept for back-compat imports
+export const CAMERA_COST  = 100_000;
 
 // Keep for back-compat (buy-color endpoint still exists)
 export const PREMIUM_COLORS: string[] = [];
@@ -205,9 +206,11 @@ router.post("/users/me/buy-avatar", requireAuth, async (req, res): Promise<void>
     return;
   }
 
-  const cost = isCamera ? CAMERA_COST : AVATAR_COST;
+  // Emoji cost escalates: 10,000 × (number of emojis already unlocked + 1)
+  const emojiUnlockedCount = unlocked.filter((a: string) => a !== 'camera').length;
+  const cost = isCamera ? CAMERA_COST : AVATAR_COST_BASE * (emojiUnlockedCount + 1);
   if (u.coins < cost) {
-    res.status(400).json({ error: `Not enough coins (need ${cost})` });
+    res.status(400).json({ error: `Not enough coins (need ${cost.toLocaleString()})` });
     return;
   }
 

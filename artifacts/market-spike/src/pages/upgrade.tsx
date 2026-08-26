@@ -102,11 +102,13 @@ const perks = [
   },
 ];
 
+const PAY_BASE = 'https://www.foundersweekends.com/api/pay?venture=646c3a71-f44e-4e0b-a3aa-d57d624c84d8&name=Venture+1';
+
 const coinBundles = [
-  { id: 'starter', coins: 500,   price: '$0.99',  label: 'Starter',  bonus: null,          popular: false },
-  { id: 'value',   coins: 2000,  price: '$2.99',  label: 'Value',    bonus: '+200 bonus',  popular: true  },
-  { id: 'mega',    coins: 5500,  price: '$6.99',  label: 'Mega',     bonus: '+500 bonus',  popular: false },
-  { id: 'ultra',   coins: 15000, price: '$14.99', label: 'Ultra',    bonus: '+2,000 bonus',popular: false },
+  { id: 'starter', coins: 500,   price: '$0.99',  label: 'Starter',  bonus: null,           popular: false, payLink: `${PAY_BASE}&amount=99`   },
+  { id: 'value',   coins: 2000,  price: '$2.99',  label: 'Value',    bonus: '+200 bonus',   popular: true,  payLink: `${PAY_BASE}&amount=299`  },
+  { id: 'mega',    coins: 5500,  price: '$6.99',  label: 'Mega',     bonus: '+500 bonus',   popular: false, payLink: `${PAY_BASE}&amount=699`  },
+  { id: 'ultra',   coins: 15000, price: '$14.99', label: 'Ultra',    bonus: '+2,000 bonus', popular: false, payLink: `${PAY_BASE}&amount=1499` },
 ];
 
 export default function Upgrade() {
@@ -272,15 +274,17 @@ export default function Upgrade() {
               )}
               <div className="font-black text-lg text-foreground mt-auto mb-3">{bundle.price}</div>
               <button
-                onClick={() => handleBuyBundle(bundle.id)}
-                disabled={buyingBundle === bundle.id}
+                onClick={() => {
+                  if (!authUser) { toast.error("Sign in to buy coins"); return; }
+                  window.open(bundle.payLink, '_blank', 'noopener,noreferrer');
+                }}
                 className={`w-full py-2.5 rounded-xl font-black text-sm transition-all ${
                   bundle.popular
                     ? 'bg-yellow-400 text-black hover:bg-yellow-300 shadow-md'
                     : 'bg-primary text-white hover:bg-primary/90'
-                } disabled:opacity-60`}
+                }`}
               >
-                {buyingBundle === bundle.id ? '…' : `Buy ${bundle.label}`}
+                Buy {bundle.label}
               </button>
             </div>
           ))}

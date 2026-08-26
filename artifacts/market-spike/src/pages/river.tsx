@@ -262,6 +262,12 @@ export default function River() {
               <div className="text-6xl mb-4">💔</div>
               <h2 className="text-3xl font-black text-loss uppercase tracking-tight mb-2">Out of Lives!</h2>
               <p className="text-muted-foreground font-medium">Your lives reset tomorrow. Come back then!</p>
+              <a
+                href="/upgrade"
+                className="mt-6 inline-block bg-primary text-white font-black px-8 py-4 rounded-2xl shadow-lg hover:scale-105 transition-transform uppercase tracking-wide"
+              >
+                💎 Buy More Lives
+              </a>
             </div>
           ) : (
             <>

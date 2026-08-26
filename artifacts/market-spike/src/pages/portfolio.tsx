@@ -77,7 +77,7 @@ export default function Portfolio() {
                         className="hover:bg-muted/30 transition-colors"
                       >
                         <td className="p-4 pl-6">
-                          <Link href={`/market/${h.symbol}`} className="flex items-center gap-3 hover:opacity-80">
+                          <div className="flex items-center gap-3">
                             {h.logoUrl ? (
                               <img src={h.logoUrl} className="w-10 h-10 rounded-lg bg-white object-contain border border-border" />
                             ) : (
@@ -89,7 +89,7 @@ export default function Portfolio() {
                               <div className="font-black text-lg">{h.symbol}</div>
                               <div className="text-sm text-muted-foreground">{h.name}</div>
                             </div>
-                          </Link>
+                          </div>
                         </td>
                         <td className="p-4 text-right font-mono font-bold">${h.currentPrice.toFixed(2)}</td>
                         <td className="p-4 text-right">

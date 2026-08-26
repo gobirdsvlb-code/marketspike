@@ -16,12 +16,12 @@ import {
   Heart,
   Home,
   Sparkles,
-  BarChart3,
   Presentation,
   LogIn,
   BookOpen,
   Wrench,
   Coins,
+  BarChart3,
 } from 'lucide-react';
 
 export function Layout({ children }: { children: React.ReactNode }) {

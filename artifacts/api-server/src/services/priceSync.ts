@@ -1,17 +1,17 @@
-import YahooFinance from "yahoo-finance2";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db, stocksTable, priceHistoryTable } from "@workspace/db";
 
-const yahooFinance = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
+/** Milliseconds between Finnhub calls — free plan allows 60 req/min */
+const RATE_LIMIT_DELAY_MS = 1100;
 
-/** How often to refresh current prices (ms) */
-const PRICE_INTERVAL_MS = 60_000;
+/** How often to start a new sync cycle */
+const PRICE_INTERVAL_MS = 120_000;
 
-/** How many symbols to send in one Yahoo Finance batch call */
-const QUOTE_BATCH_SIZE = 200;
-
-/** Track which date we last wrote price-history rows (once per calendar day) */
+/** Track which calendar date we last wrote price-history rows */
 let lastHistoryDate = "";
+
+/** Prevent overlapping sync cycles */
+let syncRunning = false;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -21,10 +21,25 @@ function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function chunk<T>(arr: T[], size: number): T[][] {
-  const out: T[][] = [];
-  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
-  return out;
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchQuote(
+  symbol: string,
+  apiKey: string
+): Promise<{ price: number; change: number; changePercent: number } | null> {
+  try {
+    const res = await fetch(
+      `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`
+    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as { c: number; d: number; dp: number };
+    if (!data.c || data.c <= 0) return null;
+    return { price: data.c, change: data.d ?? 0, changePercent: data.dp ?? 0 };
+  } catch {
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -32,7 +47,15 @@ function chunk<T>(arr: T[], size: number): T[][] {
 // ---------------------------------------------------------------------------
 
 async function syncPrices(): Promise<void> {
+  if (syncRunning) return; // skip if a previous cycle is still running
+  syncRunning = true;
   try {
+    const apiKey = process.env["FINNHUB_API_KEY"];
+    if (!apiKey) {
+      console.warn("[priceSync] FINNHUB_API_KEY not set — skipping sync");
+      return;
+    }
+
     const stocks = await db
       .select({ id: stocksTable.id, symbol: stocksTable.symbol })
       .from(stocksTable);
@@ -41,82 +64,60 @@ async function syncPrices(): Promise<void> {
 
     const today = todayStr();
     const writeHistory = today !== lastHistoryDate;
-
-    const batches = chunk(stocks, QUOTE_BATCH_SIZE);
     let updated = 0;
 
-    for (const batch of batches) {
-      const symbols = batch.map((s) => s.symbol);
+    for (const stock of stocks) {
+      const quote = await fetchQuote(stock.symbol, apiKey);
 
-      // Single network round-trip for the whole batch
-      let quotes: Record<string, any>;
-      try {
-        const raw = await yahooFinance.quote(symbols, {}, { validateResult: false });
-        // quote() returns an array when given an array; index by symbol
-        quotes = {};
-        if (Array.isArray(raw)) {
-          for (const q of raw) if (q?.symbol) quotes[q.symbol] = q;
-        } else if (raw && typeof raw === "object") {
-          quotes[(raw as any).symbol] = raw;
+      if (quote) {
+        await db
+          .update(stocksTable)
+          .set({
+            price: quote.price.toFixed(4),
+            change: quote.change.toFixed(4),
+            changePercent: quote.changePercent.toFixed(4),
+            updatedAt: new Date(),
+          })
+          .where(eq(stocksTable.id, stock.id));
+
+        // Price history: write once per calendar day
+        if (writeHistory) {
+          const existing = await db
+            .select({ id: priceHistoryTable.id })
+            .from(priceHistoryTable)
+            .where(
+              and(
+                eq(priceHistoryTable.stockId, stock.id),
+                eq(priceHistoryTable.date, today)
+              )
+            )
+            .limit(1);
+
+          if (existing.length === 0) {
+            await db
+              .insert(priceHistoryTable)
+              .values({ stockId: stock.id, date: today, price: quote.price.toFixed(4) });
+          } else {
+            await db
+              .update(priceHistoryTable)
+              .set({ price: quote.price.toFixed(4) })
+              .where(eq(priceHistoryTable.id, existing[0].id));
+          }
         }
-      } catch {
-        continue; // skip batch on network error, try next cycle
+
+        updated++;
       }
 
-      // Build DB updates in parallel within the batch
-      await Promise.all(
-        batch.map(async (stock) => {
-          const quote = quotes[stock.symbol];
-          const price = quote?.regularMarketPrice;
-          if (!price || price <= 0) return;
-
-          const change = quote?.regularMarketChange ?? 0;
-          const changePercent = quote?.regularMarketChangePercent ?? 0;
-
-          await db
-            .update(stocksTable)
-            .set({
-              price: price.toFixed(4),
-              change: change.toFixed(4),
-              changePercent: changePercent.toFixed(4),
-              updatedAt: new Date(),
-            })
-            .where(eq(stocksTable.id, stock.id));
-
-          // Price history: only once per day
-          if (writeHistory) {
-            const existing = await db
-              .select({ id: priceHistoryTable.id })
-              .from(priceHistoryTable)
-              .where(
-                and(
-                  eq(priceHistoryTable.stockId, stock.id),
-                  eq(priceHistoryTable.date, today)
-                )
-              )
-              .limit(1);
-
-            if (existing.length === 0) {
-              await db
-                .insert(priceHistoryTable)
-                .values({ stockId: stock.id, date: today, price: price.toFixed(4) });
-            } else {
-              await db
-                .update(priceHistoryTable)
-                .set({ price: price.toFixed(4) })
-                .where(eq(priceHistoryTable.id, existing[0].id));
-            }
-          }
-
-          updated++;
-        })
-      );
+      // Respect Finnhub free-plan rate limit between each symbol
+      await sleep(RATE_LIMIT_DELAY_MS);
     }
 
-    if (writeHistory) lastHistoryDate = today;
-    console.log(`[priceSync] Updated ${updated}/${stocks.length} stocks`);
+    if (writeHistory && updated > 0) lastHistoryDate = today;
+    console.log(`[priceSync] Updated ${updated}/${stocks.length} stocks via Finnhub`);
   } catch (err) {
     console.error("[priceSync] Error:", err);
+  } finally {
+    syncRunning = false;
   }
 }
 
@@ -125,8 +126,7 @@ async function syncPrices(): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export function startPriceSync(): void {
-  const interval = Math.max(PRICE_INTERVAL_MS, 60_000);
-  console.log(`[priceSync] Starting — batch size ${QUOTE_BATCH_SIZE}, interval ${interval / 1000}s`);
+  console.log("[priceSync] Starting with Finnhub — rate-limited to ~54 req/min");
   void syncPrices();
-  setInterval(() => void syncPrices(), interval);
+  setInterval(() => void syncPrices(), PRICE_INTERVAL_MS);
 }

@@ -65,6 +65,8 @@ router.get("/portfolio/holdings", requireAuth, async (req, res): Promise<void> =
       name: stocksTable.name,
       logoUrl: stocksTable.logoUrl,
       currentPrice: stocksTable.price,
+      todayChange: stocksTable.change,
+      todayChangePercent: stocksTable.changePercent,
     })
     .from(holdingsTable)
     .innerJoin(stocksTable, eq(holdingsTable.stockId, stocksTable.id))
@@ -77,6 +79,8 @@ router.get("/portfolio/holdings", requireAuth, async (req, res): Promise<void> =
     const currentValue = qty * currentPrice;
     const gainLoss = currentValue - qty * avgBuy;
     const gainLossPercent = avgBuy > 0 ? ((currentPrice - avgBuy) / avgBuy) * 100 : 0;
+    const todayChange = parseFloat(h.todayChange ?? "0");
+    const todayChangePercent = parseFloat(h.todayChangePercent ?? "0");
     return {
       id: h.id,
       stockId: h.stockId,
@@ -89,6 +93,8 @@ router.get("/portfolio/holdings", requireAuth, async (req, res): Promise<void> =
       currentValue,
       gainLoss,
       gainLossPercent,
+      todayChange,          // today's $ change per share
+      todayChangePercent,   // today's % change
     };
   }));
 });
