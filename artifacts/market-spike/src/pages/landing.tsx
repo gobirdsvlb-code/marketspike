@@ -100,7 +100,7 @@ function Ticker() {
   );
 }
 
-function Navbar({ onGetStarted }: { onGetStarted: () => void }) {
+function Navbar({ onGetStarted, onSignIn }: { onGetStarted: () => void; onSignIn: () => void }) {
   const [scrolled, setScrolled] = useState(false);
   const [, navigate] = useLocation();
 
@@ -127,13 +127,22 @@ function Navbar({ onGetStarted }: { onGetStarted: () => void }) {
             Market Spike
           </span>
         </a>
-        <button
-          onClick={onGetStarted}
-          className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-400/25 cursor-pointer border-0"
-          style={{ fontFamily: "'Outfit', sans-serif" }}
-        >
-          Get Started Free
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onSignIn}
+            className="text-slate-300 hover:text-white font-bold text-sm px-3 py-2.5 transition-colors cursor-pointer bg-transparent border-0"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
+          >
+            Sign In
+          </button>
+          <button
+            onClick={onGetStarted}
+            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-400/25 cursor-pointer border-0"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
+          >
+            Get Started Free
+          </button>
+        </div>
       </div>
     </header>
   );
@@ -510,7 +519,7 @@ function Footer() {
           © {new Date().getFullYear()} Market Spike. Learn. Level Up. Win.
         </p>
         <p className="text-slate-600 text-sm">
-          <a href="/sign-in" className="text-slate-500 hover:text-white transition-colors">
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/sign-in`} className="text-slate-500 hover:text-white transition-colors">
             Sign In
           </a>
         </p>
@@ -521,25 +530,31 @@ function Footer() {
 
 export default function Landing() {
   const [, navigate] = useLocation();
-  const { openSignIn } = useClerk();
-  const { isSignedIn } = useUser();
+  const { openSignIn, openSignUp } = useClerk();
+  const { isLoaded, isSignedIn } = useUser();
+
+  const homeUrl = window.location.origin + (import.meta.env.BASE_URL || '/') + 'home';
+
+  // Returning, signed-in users skip the marketing page and go straight to the app.
+  useEffect(() => {
+    if (isLoaded && isSignedIn) navigate('/home', { replace: true });
+  }, [isLoaded, isSignedIn, navigate]);
 
   const handleGetStarted = () => {
-    if (isSignedIn) {
-      navigate('/home');
-    } else {
-      openSignIn({ forceRedirectUrl: window.location.origin + (import.meta.env.BASE_URL || '/') + 'home' });
-    }
+    if (isSignedIn) navigate('/home');
+    else openSignUp({ forceRedirectUrl: homeUrl });
   };
 
-  const handleGuest = () => {
-    localStorage.setItem('spike_guest_mode', 'true');
-    navigate('/home');
+  const handleSignIn = () => {
+    if (isSignedIn) navigate('/home');
+    else openSignIn({ forceRedirectUrl: homeUrl });
   };
+
+  const handleGuest = () => navigate('/home');
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <Navbar onGetStarted={handleGetStarted} />
+      <Navbar onGetStarted={handleGetStarted} onSignIn={handleSignIn} />
       <Ticker />
       <HeroSection onGetStarted={handleGetStarted} onGuest={handleGuest} />
       <HowItWorks />
