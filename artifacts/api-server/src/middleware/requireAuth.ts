@@ -72,12 +72,22 @@ export async function requireAuth(
           username = `${username}${Math.floor(Math.random() * 9000) + 1000}`;
         }
 
+        // Parallel first requests race here; the unique clerkUserId makes the
+        // loser a no-op, so re-select instead of failing.
         const created = await db
           .insert(usersTable)
           .values({ clerkUserId, username, email })
+          .onConflictDoNothing()
           .returning();
-        users = created;
+        users = created[0]
+          ? created
+          : await db
+              .select()
+              .from(usersTable)
+              .where(eq(usersTable.clerkUserId, clerkUserId))
+              .limit(1);
       }
+      if (!users[0]) throw new Error("user row missing after provisioning");
     } catch (err) {
       console.error("[requireAuth] JIT provisioning failed:", err);
       res.status(500).json({ error: "Failed to provision user" });

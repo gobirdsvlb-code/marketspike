@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { eq, or, and, ne } from "drizzle-orm";
 import { db, friendsTable, usersTable } from "@workspace/db";
+import { checkAchievements } from "../utils/achievements";
 import { requireAuth } from "../middleware/requireAuth";
 
 const router = Router();
@@ -152,6 +153,9 @@ router.post(
       .update(friendsTable)
       .set({ status: "accepted" })
       .where(eq(friendsTable.id, id));
+
+    await checkAchievements(ME);
+    await checkAchievements(rows[0].userId);
 
     res.json({ success: true });
   }

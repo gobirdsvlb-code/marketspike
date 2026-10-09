@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, lessonsTable, userLessonsTable, usersTable } from "@workspace/db";
+import { checkAchievements } from "../utils/achievements";
 import { requireAuth } from "../middleware/requireAuth";
 import { grantFriendXp } from "../utils/friendXp";
 
@@ -212,7 +213,8 @@ router.post("/learn/lessons/:lessonId/complete", requireAuth, async (req, res): 
     grantFriendXp(userId, xpEarned).catch(() => {});
   }
 
-  res.json({ xpEarned, coinsEarned, newLevel, leveledUp, newAchievements: [] });
+  const newAchievements = await checkAchievements(userId);
+  res.json({ xpEarned, coinsEarned, newLevel, leveledUp, newAchievements });
 });
 
 export default router;

@@ -3,6 +3,7 @@ import { eq, inArray } from "drizzle-orm";
 import { db, lessonQuestionsTable, lessonsTable, usersTable } from "@workspace/db";
 import { getLevelFromXp } from "../utils/level";
 import { grantFriendXp } from "../utils/friendXp";
+import { checkAchievements } from "../utils/achievements";
 import { requireAuth } from "../middleware/requireAuth";
 
 const router = Router();
@@ -116,7 +117,10 @@ router.post("/game/river/complete", requireAuth, async (req, res): Promise<void>
   // Grant half the XP to each accepted friend (fire-and-forget)
   grantFriendXp(userId, xpReward).catch(() => {});
 
+  const newAchievements = await checkAchievements(userId);
+
   res.json({
+    newAchievements,
     xpEarned: xpReward,
     newXp,
     newLevel,

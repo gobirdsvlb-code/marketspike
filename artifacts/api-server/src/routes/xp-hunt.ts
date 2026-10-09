@@ -7,6 +7,11 @@ import { requireAuth } from "../middleware/requireAuth";
 
 const router = Router();
 
+const XP_BY_TIER: Record<string, number> = { coin: 75, gem: 125, trophy: 200 };
+// A real round needs two correct answers plus the walk to the treasure.
+const MIN_COLLECT_INTERVAL_MS = 10_000;
+const lastCollectAt = new Map<number, number>();
+
 // GET /game/xp-hunt — shuffled questions from the dedicated XP Hunt bank
 router.get("/game/xp-hunt", requireAuth, async (req, res): Promise<void> => {
   const userId = (req as any).userId;
@@ -20,9 +25,20 @@ router.get("/game/xp-hunt", requireAuth, async (req, res): Promise<void> => {
 // POST /game/xp-hunt/collect — award XP for treasure collected
 router.post("/game/xp-hunt/collect", requireAuth, async (req, res): Promise<void> => {
   const userId = (req as any).userId;
-  const { tier } = req.body as { tier: "coin" | "gem" | "trophy" };
-  const XP: Record<string, number> = { coin: 75, gem: 125, trophy: 200 };
-  const xpReward = XP[tier] ?? 75;
+  const { tier } = (req.body ?? {}) as { tier?: string };
+  if (!tier || !Object.prototype.hasOwnProperty.call(XP_BY_TIER, tier)) {
+    res.status(400).json({ error: "Invalid treasure tier" });
+    return;
+  }
+  const xpReward = XP_BY_TIER[tier];
+
+  const now = Date.now();
+  const last = lastCollectAt.get(userId) ?? 0;
+  if (now - last < MIN_COLLECT_INTERVAL_MS) {
+    res.status(429).json({ error: "Treasure collected too quickly" });
+    return;
+  }
+  lastCollectAt.set(userId, now);
 
   const users = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
   if (!users[0]) { res.status(404).json({ error: "User not found" }); return; }

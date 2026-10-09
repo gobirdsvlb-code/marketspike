@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, usersTable, stocksTable, holdingsTable, tradesTable } from "@workspace/db";
+import { checkAchievements } from "../utils/achievements";
 import { requireAuth } from "../middleware/requireAuth";
 
 const STARTING_BALANCE = 10000;
@@ -250,6 +251,7 @@ router.post("/portfolio/trades", requireAuth, async (req, res): Promise<void> =>
   }).returning();
 
   const t = inserted[0];
+  await checkAchievements(userId);
   res.status(201).json({
     id: t.id,
     stockId: t.stockId,

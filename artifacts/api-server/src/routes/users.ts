@@ -2,6 +2,7 @@ import { Router } from "express";
 import { eq } from "drizzle-orm";
 import { db, usersTable } from "@workspace/db";
 import { getLevelFromXp, streakBonus } from "../utils/level";
+import { checkAchievements } from "../utils/achievements";
 import { requireAuth } from "../middleware/requireAuth";
 
 const router = Router();
@@ -181,7 +182,8 @@ router.post("/users/daily-checkin", requireAuth, async (req, res): Promise<void>
     .set({ lastLoginDate: today, streak: newStreak, xp: newXp, level: newLevel, coins: newCoins })
     .where(eq(usersTable.id, userId));
 
-  res.json({ alreadyCheckedIn: false, xpEarned, streak: newStreak, newLevel, leveledUp, coinsEarned, newCoins });
+  const newAchievements = await checkAchievements(userId);
+  res.json({ alreadyCheckedIn: false, xpEarned, streak: newStreak, newLevel, leveledUp, coinsEarned, newCoins, newAchievements });
 });
 
 // POST /users/me/buy-avatar — purchase a premium emoji avatar or unlock camera
