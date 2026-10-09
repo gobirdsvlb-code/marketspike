@@ -19,6 +19,8 @@ export const usersTable = pgTable("users", {
   clerkUserId: text("clerk_user_id").unique(),
   coins: integer("coins").notNull().default(0),
   tier: text("tier").notNull().default("free"),           // 'free' | 'pro' | 'elite'
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
   unlockedColors: text("unlocked_colors").notNull().default("[]"), // JSON array of hex strings
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

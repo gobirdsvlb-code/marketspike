@@ -9,6 +9,7 @@ import {
   getClerkProxyHost,
 } from "./middlewares/clerkProxyMiddleware";
 import router from "./routes";
+import { stripeWebhook } from "./routes/payments";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -31,6 +32,9 @@ app.use(
 
 // Clerk proxy must be mounted before body parsers (streams raw bytes)
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+
+// Stripe webhook needs the raw body for signature verification — before express.json
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), stripeWebhook);
 
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json({ limit: "10mb" }));

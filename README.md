@@ -48,6 +48,28 @@ pnpm --filter @workspace/market-spike run dev   # Frontend → localhost:PORT
 pnpm --filter @workspace/api-server run dev     # API → localhost:PORT
 ```
 
+## Payments (Stripe)
+
+Pro/Elite subscriptions and coin bundles go through `/api/payments/*`. Until
+`STRIPE_SECRET_KEY` is set, the API runs in **mock mode**: checkout shows a
+test-mode confirmation and no money moves. Setting the key switches to real
+Stripe Checkout.
+
+| Env var | Purpose |
+|---|---|
+| `STRIPE_SECRET_KEY` | Enables real Stripe (leave unset for mock mode) |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret for `POST /api/payments/webhook` |
+| `APP_URL` | Optional; origin used for Checkout return URLs |
+| `PAYMENTS_MODE=disabled` | Turns purchases off entirely |
+
+Webhook events to enable: `checkout.session.completed`,
+`customer.subscription.updated`, `customer.subscription.deleted`.
+Run `pnpm --filter @workspace/db run push` after pulling to create the new
+`payments` table and Stripe columns on `users`.
+
+**Before launch, set the Stripe keys** — mock mode lets any signed-in user
+"buy" items for free.
+
 ## Live App
 
 [marketspike.app](https://marketspike.app)

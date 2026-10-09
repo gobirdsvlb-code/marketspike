@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, X, Heart, Sparkles, Zap, Shield, Star, Coins, Package } from 'lucide-react';
 import { toast } from 'sonner';
 import { Layout } from '@/components/layout';
@@ -38,7 +38,6 @@ const plans = [
     highlight: true,
     cta: 'Go Pro →',
     ctaDisabled: false,
-    ctaLink: 'https://www.foundersweekends.com/api/pay?venture=646c3a71-f44e-4e0b-a3aa-d57d624c84d8&amount=499&name=Venture+1',
     color: 'bg-primary border-primary',
     features: [
       { label: '5 hearts per day', included: true },
@@ -60,7 +59,6 @@ const plans = [
     highlight: false,
     cta: 'Go Elite →',
     ctaDisabled: false,
-    ctaLink: 'https://www.foundersweekends.com/api/pay?venture=646c3a71-f44e-4e0b-a3aa-d57d624c84d8&amount=999&name=Venture+1',
     color: 'bg-gradient-to-br from-yellow-400 via-amber-400 to-yellow-500 border-yellow-500',
     features: [
       { label: '5 hearts per day', included: true },
@@ -102,40 +100,95 @@ const perks = [
   },
 ];
 
-const PAY_BASE = 'https://www.foundersweekends.com/api/pay?venture=646c3a71-f44e-4e0b-a3aa-d57d624c84d8&name=Venture+1';
 
 const coinBundles = [
-  { id: 'starter', coins: 500,   price: '$0.99',  label: 'Starter',  bonus: null,           popular: false, payLink: `${PAY_BASE}&amount=99`   },
-  { id: 'value',   coins: 2000,  price: '$2.99',  label: 'Value',    bonus: '+200 bonus',   popular: true,  payLink: `${PAY_BASE}&amount=299`  },
-  { id: 'mega',    coins: 5500,  price: '$6.99',  label: 'Mega',     bonus: '+500 bonus',   popular: false, payLink: `${PAY_BASE}&amount=699`  },
-  { id: 'ultra',   coins: 15000, price: '$14.99', label: 'Ultra',    bonus: '+2,000 bonus', popular: false, payLink: `${PAY_BASE}&amount=1499` },
+  { id: 'starter', coins: 500,   price: '$0.99',  label: 'Starter',  bonus: null,           popular: false   },
+  { id: 'value',   coins: 2000,  price: '$2.99',  label: 'Value',    bonus: '+200 bonus',   popular: true  },
+  { id: 'mega',    coins: 5500,  price: '$6.99',  label: 'Mega',     bonus: '+500 bonus',   popular: false  },
+  { id: 'ultra',   coins: 15000, price: '$14.99', label: 'Ultra',    bonus: '+2,000 bonus', popular: false },
 ];
 
 export default function Upgrade() {
   const queryClient = useQueryClient();
   const { user: authUser } = useAuth();
   const { data: user } = useGetCurrentUser();
-  const [buyingBundle, setBuyingBundle] = useState<string | null>(null);
 
-  const handleBuyBundle = async (bundleId: string) => {
-    if (!authUser) { toast.error("Sign in to buy coins"); return; }
-    setBuyingBundle(bundleId);
+  const [mode, setMode] = useState<'mock' | 'stripe' | 'disabled' | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [mockPurchase, setMockPurchase] = useState<{ paymentId: number; label: string; amountCents: number } | null>(null);
+
+  const refreshUser = () => queryClient.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+  useEffect(() => {
+    fetch('/api/payments/config').then(r => r.json()).then(d => setMode(d.mode)).catch(() => {});
+
+    const params = new URLSearchParams(window.location.search);
+    const result = params.get('payment');
+    if (result) {
+      if (result === 'success') {
+        toast.success('Payment received! Your purchase will appear in a moment.');
+        refreshUser();
+        setTimeout(refreshUser, 3000);
+      } else {
+        toast('Checkout cancelled — you were not charged.');
+      }
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  const post = async (url: string, body?: unknown) => {
+    const r = await fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body ?? {}),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || 'Something went wrong');
+    return data;
+  };
+
+  const startCheckout = async (kind: 'coins' | 'plan', itemId: string) => {
+    if (!authUser) { toast.error('Sign in to make a purchase'); return; }
+    setBusy(itemId);
     try {
-      const r = await fetch('/api/coins/buy-bundle', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bundleId }),
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error);
-      const bundle = coinBundles.find(b => b.id === bundleId)!;
-      toast.success(`🪙 +${bundle.coins.toLocaleString()} coins added!`);
-      queryClient.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
+      const data = await post('/api/payments/checkout', { kind, itemId, returnPath: `${basePath}/upgrade` });
+      if (data.mode === 'stripe') { window.location.href = data.url; return; }
+      setMockPurchase({ paymentId: data.paymentId, label: data.label, amountCents: data.amountCents });
     } catch (e: any) {
-      toast.error(e.message || "Purchase failed");
+      toast.error(e.message);
     } finally {
-      setBuyingBundle(null);
+      setBusy(null);
+    }
+  };
+
+  const confirmMock = async () => {
+    if (!mockPurchase) return;
+    setBusy('confirm');
+    try {
+      await post('/api/payments/mock/confirm', { paymentId: mockPurchase.paymentId });
+      toast.success(`${mockPurchase.label} purchased (test mode)`);
+      setMockPurchase(null);
+      refreshUser();
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const manageSubscription = async () => {
+    setBusy('manage');
+    try {
+      const data = await post('/api/payments/manage');
+      if (data.mode === 'stripe') { window.location.href = data.url; return; }
+      toast.success('Subscription cancelled (test mode)');
+      refreshUser();
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setBusy(null);
     }
   };
 
@@ -210,13 +263,13 @@ export default function Upgrade() {
               ))}
             </ul>
             <button
-              disabled={plan.ctaDisabled}
+              disabled={plan.ctaDisabled || user?.tier === plan.id || busy === plan.id}
               onClick={() => {
-                if (plan.ctaDisabled) return;
-                if ((plan as any).ctaLink) window.open((plan as any).ctaLink, '_blank', 'noopener,noreferrer');
+                if (plan.ctaDisabled || user?.tier === plan.id) return;
+                startCheckout('plan', plan.id);
               }}
               className={`w-full py-3 rounded-xl font-black text-sm transition-all
-                ${plan.ctaDisabled
+                ${(plan.ctaDisabled || user?.tier === plan.id)
                   ? 'bg-muted text-muted-foreground cursor-not-allowed'
                   : plan.highlight
                     ? 'bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl'
@@ -224,7 +277,7 @@ export default function Upgrade() {
                 }
               `}
             >
-              {plan.cta}
+              {user?.tier === plan.id ? 'Current Plan' : plan.cta}
             </button>
           </div>
         ))}
@@ -274,10 +327,8 @@ export default function Upgrade() {
               )}
               <div className="font-black text-lg text-foreground mt-auto mb-3">{bundle.price}</div>
               <button
-                onClick={() => {
-                  if (!authUser) { toast.error("Sign in to buy coins"); return; }
-                  window.open(bundle.payLink, '_blank', 'noopener,noreferrer');
-                }}
+                disabled={busy === bundle.id}
+                onClick={() => startCheckout('coins', bundle.id)}
                 className={`w-full py-2.5 rounded-xl font-black text-sm transition-all ${
                   bundle.popular
                     ? 'bg-yellow-400 text-black hover:bg-yellow-300 shadow-md'
@@ -290,6 +341,53 @@ export default function Upgrade() {
           ))}
         </div>
       </div>
+
+      {user && user.tier !== 'free' && (
+        <div className="text-center mb-4">
+          <button
+            onClick={manageSubscription}
+            disabled={busy === 'manage'}
+            className="text-sm font-bold text-primary hover:underline disabled:opacity-50"
+          >
+            Manage subscription
+          </button>
+        </div>
+      )}
+
+      {mockPurchase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="bg-background rounded-3xl border border-border shadow-2xl p-8 max-w-sm w-full text-center">
+            <h3 className="text-xl font-black mb-1">Confirm test purchase</h3>
+            <p className="text-muted-foreground mb-4">
+              {mockPurchase.label} · ${(mockPurchase.amountCents / 100).toFixed(2)}
+            </p>
+            <p className="text-xs text-muted-foreground mb-6">
+              Payments are in test mode — no card is charged.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setMockPurchase(null)}
+                className="flex-1 py-3 rounded-xl font-bold bg-muted text-muted-foreground"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmMock}
+                disabled={busy === 'confirm'}
+                className="flex-1 py-3 rounded-xl font-black bg-primary text-white disabled:opacity-50"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mode === 'mock' && (
+        <p className="text-center text-xs font-bold text-yellow-600 mb-2">
+          Test mode: purchases are simulated until Stripe is connected.
+        </p>
+      )}
 
       <p className="text-center text-xs text-muted-foreground">
         All plans auto-renew. Cancel anytime. Questions? Contact us at support@marketspike.app

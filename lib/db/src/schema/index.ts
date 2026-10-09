@@ -7,3 +7,4 @@ export * from "./lessons";
 export * from "./lessonQuestions";
 export * from "./achievements";
 export * from "./friends";
+export * from "./payments";

@@ -13,6 +13,7 @@ import leaderboardRouter from "./leaderboard";
 import statsRouter from "./stats";
 import xpHuntRouter from "./xp-hunt";
 import coinsRouter from "./coins";
+import paymentsRouter from "./payments";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(leaderboardRouter);
 router.use(statsRouter);
 router.use(xpHuntRouter);
 router.use(coinsRouter);
+router.use(paymentsRouter);
 
 export default router;

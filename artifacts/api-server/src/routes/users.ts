@@ -168,7 +168,7 @@ router.post("/users/daily-checkin", requireAuth, async (req, res): Promise<void>
     newStreak = 1;                  // streak broken — restart
   }
 
-  const xpEarned = streakBonus(newStreak);
+  const xpEarned = streakBonus(newStreak) * (u.tier === "elite" ? 2 : 1);
   const newXp    = u.xp + xpEarned;
   const newLevel = getLevelFromXp(newXp);
   const leveledUp = newLevel > u.level;
@@ -233,7 +233,8 @@ router.post("/users/me/use-life", requireAuth, async (req, res): Promise<void> =
   if (!users[0]) { res.status(404).json({ error: "User not found" }); return; }
 
   let lives = users[0].livesResetDate !== today ? 5 : users[0].lives;
-  if (lives > 0) lives -= 1;
+  const unlimitedHearts = users[0].tier === "pro" || users[0].tier === "elite";
+  if (lives > 0 && !unlimitedHearts) lives -= 1;
 
   await db.update(usersTable).set({ lives, livesResetDate: today }).where(eq(usersTable.id, userId));
   res.json({ lives, outOfLives: lives === 0 });
