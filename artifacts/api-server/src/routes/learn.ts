@@ -127,7 +127,8 @@ router.get("/learn/lessons", requireAuth, async (req, res): Promise<void> => {
 // POST /learn/lessons/:lessonId/start — record that the user opened the lesson
 router.post("/learn/lessons/:lessonId/start", requireAuth, async (req, res): Promise<void> => {
   const userId = (req as any).userId;
-  const lessonId = parseInt(req.params.lessonId, 10);
+  const rawId = Array.isArray(req.params.lessonId) ? req.params.lessonId[0] : req.params.lessonId;
+  const lessonId = parseInt(rawId, 10);
   if (isNaN(lessonId)) { res.status(400).json({ error: "Invalid lesson ID" }); return; }
 
   const existing = await db

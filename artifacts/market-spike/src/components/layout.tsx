@@ -240,7 +240,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           })()}
 
           {/* Speech tab — only visible to authorized email */}
-          {user?.email === 'vaughnlevibrantley@gmail.com' && (() => {
+          {authUser?.email === 'vaughnlevibrantley@gmail.com' && (() => {
             const isActive = location === '/speech';
             return (
               <Link

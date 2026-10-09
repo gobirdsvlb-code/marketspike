@@ -9,14 +9,8 @@ import {
 import { Layout } from '@/components/layout';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, AlertCircle, Briefcase } from 'lucide-react';
-import { useToast } from '@/components/ui/toast'; // assume standard UI toast or just simple alert
 import { Link } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
-
-// Simple toast implementation fallback since we don't have the full shadcn toast context here
-const showToast = (title: string, desc: string) => {
-  // In a real app we'd use the toaster, but for now we just rely on UI state
-};
 
 export default function StockDetail() {
   const { symbol } = useParams();

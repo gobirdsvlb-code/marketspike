@@ -37,6 +37,8 @@ export * from './portfolioSummary';
 export * from './pricePoint';
 export * from './removeFriend200';
 export * from './riverCrossing';
+export * from './riverCrossingDifficulty';
+export * from './riverCrossingNextDifficulty';
 export * from './stock';
 export * from './stockDetail';
 export * from './trade';

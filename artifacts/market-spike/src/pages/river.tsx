@@ -10,8 +10,8 @@ import { Link, useSearch } from 'wouter';
 // ── Persistent game stats stored in localStorage ──
 const STATS_KEY = 'spike_game_stats';
 type GameStats = { gamesPlayed: number; totalCorrect: number; totalQuestions: number; totalTimeSec: number; bestAccuracy: number };
-function loadStats(): GameStats {
-  try { return JSON.parse(localStorage.getItem(STATS_KEY) || '{}'); } catch { return {} as GameStats; }
+function loadStats(): Partial<GameStats> {
+  try { return JSON.parse(localStorage.getItem(STATS_KEY) || '{}'); } catch { return {}; }
 }
 function saveStats(s: GameStats) {
   localStorage.setItem(STATS_KEY, JSON.stringify(s));

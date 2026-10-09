@@ -79,6 +79,10 @@ export const RemoveFriendResponse = zod.object({
  */
 export const GetRiverCrossingResponse = zod.object({
   "lives": zod.number(),
+  "difficulty": zod.enum(['easy', 'medium', 'hard']),
+  "completions": zod.number().describe('Total river crossings completed by the player'),
+  "nextDifficulty": zod.enum(['easy', 'medium', 'hard']),
+  "runsUntilChange": zod.number().describe('Crossings remaining before difficulty changes'),
   "questions": zod.array(zod.object({
   "id": zod.number(),
   "lessonId": zod.number(),
@@ -106,6 +110,9 @@ export const GetCurrentUserResponse = zod.object({
   "level": zod.number(),
   "streak": zod.number().describe('Daily login streak in days'),
   "lives": zod.number().describe('Lives remaining today (max 5, resets daily)'),
+  "coins": zod.number().describe('Spike Coin balance'),
+  "tier": zod.string().describe('Subscription tier — free | pro | elite'),
+  "unlockedColors": zod.array(zod.string()).describe('Premium avatar colors the user has unlocked'),
   "createdAt": zod.coerce.date()
 })
 
@@ -131,6 +138,9 @@ export const UpdateCurrentUserResponse = zod.object({
   "level": zod.number(),
   "streak": zod.number().describe('Daily login streak in days'),
   "lives": zod.number().describe('Lives remaining today (max 5, resets daily)'),
+  "coins": zod.number().describe('Spike Coin balance'),
+  "tier": zod.string().describe('Subscription tier — free | pro | elite'),
+  "unlockedColors": zod.array(zod.string()).describe('Premium avatar colors the user has unlocked'),
   "createdAt": zod.coerce.date()
 })
 
@@ -286,6 +296,7 @@ export const GetCurriculumResponseItem = zod.object({
   "xpReward": zod.number(),
   "durationMinutes": zod.number(),
   "completed": zod.boolean().describe('Whether the current user has completed this lesson'),
+  "started": zod.boolean().describe('Whether the current user has opened this lesson'),
   "icon": zod.string()
 })),
   "totalLessons": zod.number(),
@@ -311,6 +322,7 @@ export const ListLessonsResponseItem = zod.object({
   "xpReward": zod.number(),
   "durationMinutes": zod.number(),
   "completed": zod.boolean().describe('Whether the current user has completed this lesson'),
+  "started": zod.boolean().describe('Whether the current user has opened this lesson'),
   "icon": zod.string()
 })
 export const ListLessonsResponse = zod.array(ListLessonsResponseItem)

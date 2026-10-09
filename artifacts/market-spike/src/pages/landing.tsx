@@ -528,7 +528,7 @@ export default function Landing() {
     if (isSignedIn) {
       navigate('/home');
     } else {
-      openSignIn({ redirectUrl: window.location.origin + (import.meta.env.BASE_URL || '/') + 'home' });
+      openSignIn({ forceRedirectUrl: window.location.origin + (import.meta.env.BASE_URL || '/') + 'home' });
     }
   };
 

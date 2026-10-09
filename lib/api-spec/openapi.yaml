@@ -526,11 +526,23 @@ components:
       properties:
         lives:
           type: integer
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        completions:
+          type: integer
+          description: Total river crossings completed by the player
+        nextDifficulty:
+          type: string
+          enum: [easy, medium, hard]
+        runsUntilChange:
+          type: integer
+          description: Crossings remaining before difficulty changes
         questions:
           type: array
           items:
             $ref: "#/components/schemas/LessonQuestion"
-      required: [lives, questions]
+      required: [lives, difficulty, completions, nextDifficulty, runsUntilChange, questions]
 
     Stock:
       type: object
@@ -690,9 +702,12 @@ components:
         completed:
           type: boolean
           description: Whether the current user has completed this lesson
+        started:
+          type: boolean
+          description: Whether the current user has opened this lesson
         icon:
           type: string
-      required: [id, title, description, difficulty, stage, category, levelNumber, sortOrder, xpReward, durationMinutes, completed, icon]
+      required: [id, title, description, difficulty, stage, category, levelNumber, sortOrder, xpReward, durationMinutes, completed, started, icon]
 
     LessonQuestion:
       type: object

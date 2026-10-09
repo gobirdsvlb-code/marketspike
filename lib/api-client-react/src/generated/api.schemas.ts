@@ -83,6 +83,24 @@ export interface AddFriendRequest {
   username: string;
 }
 
+export type RiverCrossingDifficulty = typeof RiverCrossingDifficulty[keyof typeof RiverCrossingDifficulty];
+
+
+export const RiverCrossingDifficulty = {
+  easy: 'easy',
+  medium: 'medium',
+  hard: 'hard',
+} as const;
+
+export type RiverCrossingNextDifficulty = typeof RiverCrossingNextDifficulty[keyof typeof RiverCrossingNextDifficulty];
+
+
+export const RiverCrossingNextDifficulty = {
+  easy: 'easy',
+  medium: 'medium',
+  hard: 'hard',
+} as const;
+
 export type LessonQuestionType = typeof LessonQuestionType[keyof typeof LessonQuestionType];
 
 
@@ -109,6 +127,12 @@ export interface LessonQuestion {
 
 export interface RiverCrossing {
   lives: number;
+  difficulty: RiverCrossingDifficulty;
+  /** Total river crossings completed by the player */
+  completions: number;
+  nextDifficulty: RiverCrossingNextDifficulty;
+  /** Crossings remaining before difficulty changes */
+  runsUntilChange: number;
   questions: LessonQuestion[];
 }
 
@@ -242,6 +266,8 @@ export interface Lesson {
   durationMinutes: number;
   /** Whether the current user has completed this lesson */
   completed: boolean;
+  /** Whether the current user has opened this lesson */
+  started: boolean;
   icon: string;
 }
 

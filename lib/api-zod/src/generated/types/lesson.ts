@@ -23,5 +23,7 @@ export interface Lesson {
   durationMinutes: number;
   /** Whether the current user has completed this lesson */
   completed: boolean;
+  /** Whether the current user has opened this lesson */
+  started: boolean;
   icon: string;
 }

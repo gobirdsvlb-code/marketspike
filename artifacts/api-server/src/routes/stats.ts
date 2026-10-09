@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, isNotNull } from "drizzle-orm";
 import { db, usersTable, holdingsTable, stocksTable, tradesTable, lessonsTable, userLessonsTable, achievementsTable, userAchievementsTable } from "@workspace/db";
 import { requireAuth } from "../middleware/requireAuth";
 
@@ -78,7 +78,7 @@ router.get("/stats/activity-feed", requireAuth, async (req, res): Promise<void> 
     })
     .from(userLessonsTable)
     .innerJoin(lessonsTable, eq(userLessonsTable.lessonId, lessonsTable.id))
-    .where(eq(userLessonsTable.userId, userId))
+    .where(and(eq(userLessonsTable.userId, userId), isNotNull(userLessonsTable.completedAt)))
     .orderBy(desc(userLessonsTable.completedAt))
     .limit(5);
 
@@ -120,7 +120,7 @@ router.get("/stats/activity-feed", requireAuth, async (req, res): Promise<void> 
       timestamp: a.earnedAt,
       icon: a.icon,
     })),
-  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
+  ].sort((a, b) => new Date(b.timestamp ?? 0).getTime() - new Date(a.timestamp ?? 0).getTime()).slice(0, 10);
 
   res.json(feed);
 });

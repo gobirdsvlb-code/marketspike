@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function SpikeMascot({ className = "", variant = "default" }: { className?: string, variant?: "default" | "happy" | "sad" | "cool" | "charging" }) {
+export function SpikeMascot({ className = "", variant = "default" }: { className?: string, variant?: "default" | "happy" | "sad" | "cool" | "charging" | "excited" }) {
   // A friendly, confident bull SVG character
   
   const getEyes = () => {
@@ -14,6 +14,13 @@ export function SpikeMascot({ className = "", variant = "default" }: { className
           <g>
             <rect x="65" y="60" width="70" height="15" rx="5" fill="#1e293b" />
             <path d="M60 65 L65 60 M135 60 L140 65" stroke="#1e293b" strokeWidth="3" />
+          </g>
+        );
+      case "excited":
+        return (
+          <g>
+            <path d="M75 58 L77 68 M70 63 L80 63" stroke="white" strokeWidth="4" strokeLinecap="round" />
+            <path d="M125 58 L127 68 M120 63 L130 63" stroke="white" strokeWidth="4" strokeLinecap="round" />
           </g>
         );
       default:
@@ -35,6 +42,8 @@ export function SpikeMascot({ className = "", variant = "default" }: { className
         return <path d="M85 120 Q100 110 115 120" stroke="#1e293b" strokeWidth="4" fill="none" strokeLinecap="round" />;
       case "charging":
         return <path d="M90 115 L110 115" stroke="#1e293b" strokeWidth="4" fill="none" strokeLinecap="round" />;
+      case "excited":
+        return <path d="M82 112 Q100 135 118 112 Q100 122 82 112 Z" stroke="#1e293b" strokeWidth="3" fill="#1e293b" strokeLinecap="round" />;
       default:
         return <path d="M90 115 Q100 125 110 115" stroke="#1e293b" strokeWidth="3" fill="none" strokeLinecap="round" />;
     }
@@ -43,6 +52,7 @@ export function SpikeMascot({ className = "", variant = "default" }: { className
   const getBrows = () => {
     if (variant === "sad") return <path d="M65 50 L80 55 M135 50 L120 55" stroke="white" strokeWidth="3" strokeLinecap="round" />;
     if (variant === "charging") return <path d="M65 55 L80 50 M135 55 L120 50" stroke="white" strokeWidth="4" strokeLinecap="round" />;
+    if (variant === "excited") return <path d="M63 48 L80 42 M137 48 L120 42" stroke="white" strokeWidth="3" strokeLinecap="round" />;
     return <path d="M65 50 L80 50 M135 50 L120 50" stroke="white" strokeWidth="3" strokeLinecap="round" />;
   };
 

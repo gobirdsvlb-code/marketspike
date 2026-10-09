@@ -6,8 +6,16 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { LessonQuestion } from './lessonQuestion';
+import type { RiverCrossingDifficulty } from './riverCrossingDifficulty';
+import type { RiverCrossingNextDifficulty } from './riverCrossingNextDifficulty';
 
 export interface RiverCrossing {
   lives: number;
+  difficulty: RiverCrossingDifficulty;
+  /** Total river crossings completed by the player */
+  completions: number;
+  nextDifficulty: RiverCrossingNextDifficulty;
+  /** Crossings remaining before difficulty changes */
+  runsUntilChange: number;
   questions: LessonQuestion[];
 }

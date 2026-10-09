@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGetCurriculum, useCompleteLesson, useGetLessonQuestions, getGetCurriculumQueryKey } from '@workspace/api-client-react';
+import { useGetCurriculum, useCompleteLesson, useGetLessonQuestions, getGetCurriculumQueryKey, getGetLessonQuestionsQueryKey } from '@workspace/api-client-react';
 import { Layout } from '@/components/layout';
 import { UpgradeBanner } from '@/components/UpgradeBanner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,7 +44,7 @@ function cleanExplanation(text: string): string {
 
 function QuizOverlay({ lesson, onClose, onComplete }: { lesson: any, onClose: () => void, onComplete: () => void }) {
   const { data: rawQuestions, isLoading } = useGetLessonQuestions(lesson.id, {
-    query: { enabled: !!lesson.id }
+    query: { queryKey: getGetLessonQuestionsQueryKey(lesson.id), enabled: !!lesson.id }
   });
 
   useEffect(() => {
