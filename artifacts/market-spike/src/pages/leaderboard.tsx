@@ -77,7 +77,7 @@ export default function Leaderboard() {
           <>
             {/* ── Podium (top 3) ── */}
             {top3.length > 0 && (
-              <div className="bg-gradient-to-b from-primary/10 to-card border-2 border-border rounded-3xl p-6 md:p-8">
+              <div className="bg-tint border-2 border-border rounded-3xl p-6 md:p-8">
                 <div className="flex items-end justify-center gap-4 md:gap-8 mb-2">
                   {podiumOrder.map((entry, pi) => {
                     if (!entry) return null;

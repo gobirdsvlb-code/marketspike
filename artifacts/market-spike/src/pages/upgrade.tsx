@@ -61,7 +61,7 @@ const plans = [
     cta: 'Go Elite →',
     ctaDisabled: false,
     ctaLink: 'https://www.foundersweekends.com/api/pay?venture=646c3a71-f44e-4e0b-a3aa-d57d624c84d8&amount=999&name=Venture+1',
-    color: 'bg-gradient-to-br from-yellow-400 via-amber-400 to-yellow-500 border-yellow-500',
+    color: 'bg-amber-400 border-amber-500',
     features: [
       { label: '5 hearts per day', included: true },
       { label: 'Access to all games', included: true },

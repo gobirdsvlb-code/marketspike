@@ -539,7 +539,7 @@ export default function Learn() {
                     ${stage.isUnlocked ? `${colors.bg} ${colors.border} ${isCurrent ? colors.glow : ''}` : 'bg-muted/40 border-muted opacity-90'}`}
                   >
                     {!stage.isUnlocked && (
-                      <div className="absolute inset-0 z-20 backdrop-blur-[3px] bg-background/50 rounded-[1.8rem] flex flex-col items-center justify-center p-4">
+                      <div className="absolute inset-0 z-20 bg-background/50 rounded-[1.8rem] flex flex-col items-center justify-center p-4">
                         <div className="bg-card border-2 border-border p-8 rounded-3xl flex flex-col items-center max-w-md text-center shadow-xl">
                           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-5 border-2 border-border shadow-inner">
                             <Lock className="w-8 h-8 text-muted-foreground" />
@@ -561,7 +561,7 @@ export default function Learn() {
                             ${!level.isUnlocked ? 'opacity-80 border-border' : levelCompleted ? 'border-epic/50 shadow-md shadow-epic/5 hover:-translate-y-1' : `border-border hover:${colors.border} hover:shadow-md hover:-translate-y-1`}`}
                           >
                             {!level.isUnlocked && stage.isUnlocked && (
-                              <div className="absolute inset-0 z-20 bg-background/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-not-allowed">
+                              <div className="absolute inset-0 z-20 bg-background/60 flex flex-col items-center justify-center cursor-not-allowed">
                                 <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center border-2 border-border shadow-sm">
                                   <Lock className="w-6 h-6 text-muted-foreground" />
                                 </div>
@@ -679,7 +679,7 @@ export default function Learn() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-background/90 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-background/90"
           >
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}

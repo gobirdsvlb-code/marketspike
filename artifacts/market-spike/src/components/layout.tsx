@@ -88,10 +88,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-[100dvh] flex flex-col md:flex-row bg-background">
       {/* Mobile Header — 2× size bar, no hamburger */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-card border-b z-50 sticky top-0">
-        <Link href="/home" className="flex items-center gap-2 font-black text-base text-primary">
-          <div className="w-10 h-10 shrink-0"><SpikeMascot className="text-primary" variant="happy" /></div>
-          MARKET SPIKE
+      <header className="md:hidden flex items-center justify-between px-4 py-2 bg-card border-b-2 z-50 sticky top-0">
+        <Link href="/home" className="flex items-center gap-2 font-display font-bold text-xl text-primary">
+          <div className="w-10 h-10 shrink-0"><SpikeMascot variant="happy" /></div>
+          market spike
         </Link>
         <div className="flex items-center gap-3 text-sm font-bold text-muted-foreground">
           {user && (
@@ -110,27 +110,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar — desktop only */}
       <aside className={`
-        fixed md:sticky top-0 left-0 h-[100dvh] w-64 bg-sidebar text-sidebar-foreground flex flex-col transition-transform duration-300 z-40
+        fixed md:sticky top-0 left-0 h-[100dvh] w-64 bg-sidebar text-sidebar-foreground border-r-2 border-sidebar-border flex flex-col transition-transform duration-300 z-40
         -translate-x-full md:translate-x-0
       `}>
         <div className="p-6 hidden md:flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <SpikeMascot className="w-10 h-10 text-white" variant="cool" />
-            <span className="font-black text-2xl tracking-tight">MARKET<br/>SPIKE</span>
+            <div className="w-11 h-11 shrink-0"><SpikeMascot variant="happy" /></div>
+            <span className="font-display font-bold text-2xl tracking-tight text-primary leading-none">market<br/>spike</span>
           </div>
           {authUser ? (
             /* Coin balance pill for logged-in users */
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-yellow-400/15 w-fit">
-              <Coins className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
-              <span className="text-xs font-black text-yellow-300">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/15 border-2 border-accent/40 w-fit">
+              <Coins className="w-3.5 h-3.5 text-accent shrink-0" />
+              <span className="text-xs font-extrabold text-foreground">
                 {(user?.coins ?? 0).toLocaleString()}
               </span>
-              <span className="text-xs text-white/50 font-medium">coins</span>
+              <span className="text-xs text-muted-foreground font-semibold">coins</span>
             </div>
           ) : (
             <button
               onClick={openAuthModal}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white/60 hover:text-white hover:bg-white/10 transition-all w-fit"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold text-muted-foreground hover:text-primary hover:bg-muted transition-all w-fit"
             >
               <LogIn className="w-3.5 h-3.5 shrink-0" />
               Sign In
@@ -140,10 +140,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         {/* User HUD */}
         {user && (
-          <div className="px-6 py-4 max-[375px]:px-3 max-[375px]:py-2 mx-4 mb-6 max-[375px]:mb-3 bg-white/10 rounded-xl glass-card text-white">
+          <div className="px-6 py-4 max-[375px]:px-3 max-[375px]:py-2 mx-4 mb-6 max-[375px]:mb-3 card-3d !rounded-2xl text-foreground">
             <div className="flex items-center gap-3 mb-3 max-[375px]:mb-2">
               <div
-                className="w-12 h-12 max-[375px]:w-9 max-[375px]:h-9 rounded-full flex items-center justify-center font-bold text-xl max-[375px]:text-base uppercase border-2 border-white/20 shadow-lg overflow-hidden shrink-0"
+                className="w-12 h-12 max-[375px]:w-9 max-[375px]:h-9 rounded-full flex items-center justify-center font-bold text-xl max-[375px]:text-base uppercase border-2 border-border overflow-hidden shrink-0"
                 style={{ backgroundColor: user.avatarColor }}
               >
                 {user.avatarUrl?.startsWith('data:') || user.avatarUrl?.startsWith('http')
@@ -155,8 +155,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
               <div>
                 <div className="font-bold max-[375px]:text-sm">{user.username}</div>
-                <div className="text-sm max-[375px]:text-xs font-mono text-white/80 flex items-center gap-1">
-                  <Zap className="w-3 h-3 text-accent" /> 
+                <div className="text-sm max-[375px]:text-xs font-bold text-muted-foreground flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5 text-accent fill-accent" /> 
                   Level {user.level}
                 </div>
               </div>
@@ -164,11 +164,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
             
             {/* XP Bar */}
             <div className="mt-2 max-[375px]:mt-1">
-              <div className="flex justify-between text-xs font-mono mb-1 font-bold">
+              <div className="flex justify-between text-xs mb-1 font-extrabold">
                 <span>{currentLevelXp} XP</span>
-                <span className="text-white/60">{xpThisLevel} XP</span>
+                <span className="text-muted-foreground">{xpThisLevel} XP</span>
               </div>
-              <div className="h-2 w-full bg-black/20 rounded-full overflow-hidden">
+              <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-accent rounded-full transition-all duration-1000 ease-out"
                   style={{ width: `${progressPercent}%` }}
@@ -176,13 +176,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             
-            <div className="mt-4 max-[375px]:mt-2 pt-3 max-[375px]:pt-2 border-t border-white/10 flex justify-between items-center font-mono">
-              <span className="text-white/60 text-xs uppercase">Lives</span>
+            <div className="mt-4 max-[375px]:mt-2 pt-3 max-[375px]:pt-2 border-t-2 border-border flex justify-between items-center">
+              <span className="text-muted-foreground text-xs font-extrabold uppercase tracking-wider">Lives</span>
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Heart 
                     key={i}
-                    className={`w-4 h-4 max-[375px]:w-3 max-[375px]:h-3 ${i < user.lives ? 'fill-loss text-loss' : 'text-white/20'}`}
+                    className={`w-4 h-4 max-[375px]:w-3 max-[375px]:h-3 ${i < user.lives ? 'fill-loss text-loss' : 'text-border'}`}
                   />
                 ))}
               </div>
@@ -198,17 +198,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex-1 min-h-[44px] flex items-center gap-3 px-4 rounded-xl font-bold transition-all
+                className={`flex-1 min-h-[44px] flex items-center gap-3 px-4 rounded-2xl border-2 font-extrabold uppercase tracking-wide text-[13px] transition-colors
                   ${isActive
-                    ? 'bg-white text-sidebar font-black shadow-lg scale-[1.02]'
-                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:bg-muted'
                   }
                 `}
               >
                 <div className="relative shrink-0">
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-primary' : ''}`} />
+                  <item.icon className={`w-6 h-6 ${isActive ? 'text-primary' : ''}`} strokeWidth={2.4} />
                   {isFriends && pendingFriendCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center px-0.5 leading-none">
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-loss text-white text-[9px] font-black rounded-full flex items-center justify-center px-0.5 leading-none">
                       {pendingFriendCount > 9 ? '9+' : pendingFriendCount}
                     </span>
                   )}
@@ -226,10 +226,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             return (
               <Link
                 href={upgradeItem.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-black transition-all
+                className={`btn-3d is-accent !justify-start gap-3 px-4 py-3 w-full text-[13px]
                   ${isActive
-                    ? 'bg-white text-sidebar shadow-lg scale-[1.02]'
-                    : 'bg-accent/20 text-accent border border-accent/40 hover:bg-accent/30 hover:text-accent'
+                    ? 'ring-2 ring-primary'
+                    : ''
                   }
                 `}
               >
@@ -245,10 +245,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             return (
               <Link
                 href="/speech"
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-black transition-all
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl border-2 font-extrabold uppercase tracking-wide text-[13px] transition-colors
                   ${isActive
-                    ? 'bg-white text-sidebar shadow-lg scale-[1.02]'
-                    : 'bg-white/5 text-white/40 border border-white/10 hover:bg-white/10 hover:text-white/70'
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:bg-muted'
                   }
                 `}
               >
@@ -271,7 +271,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t flex items-stretch">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t-2 flex items-stretch pb-[env(safe-area-inset-bottom)]">
         {bottomNavItems.map((item) => {
           const isActive = location === item.href || (item.href !== '/' && location.startsWith(item.href));
           const isFriends = item.href === '/friends';
@@ -284,14 +284,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               `}
             >
               <div className="relative">
-                <item.icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : ''}`} />
+                <item.icon className={`w-6 h-6 ${isActive ? 'stroke-[2.6]' : ''}`} />
                 {isFriends && pendingFriendCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center px-0.5 leading-none">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-loss text-white text-[9px] font-black rounded-full flex items-center justify-center px-0.5 leading-none">
                     {pendingFriendCount > 9 ? '9+' : pendingFriendCount}
                   </span>
                 )}
               </div>
-              <span className={`text-[10px] font-bold ${isActive ? 'text-primary' : ''}`}>{item.label}</span>
+              <span className={`text-[10px] font-extrabold uppercase ${isActive ? 'text-primary' : ''}`}>{item.label}</span>
             </Link>
           );
         })}

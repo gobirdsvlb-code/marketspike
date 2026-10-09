@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SpikeEmoji } from '../components/spike-mascot';
 import { Layout } from '@/components/layout';
 import { Link, useParams } from 'wouter';
 import { Zap, Flame, Trophy, Calendar, Loader2 } from 'lucide-react';
@@ -75,7 +76,7 @@ export default function UserProfile() {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
-          <div className="text-6xl mb-4">🐂</div>
+          <div className="text-6xl mb-4"><SpikeEmoji variant="happy" /></div>
           <h2 className="text-2xl font-black mb-2">User Not Found</h2>
           <p className="text-muted-foreground">No one by that username exists on Market Spike.</p>
         </div>

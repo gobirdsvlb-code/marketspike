@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SpikeEmoji } from './spike-mascot';
 import { useAuth, GUEST_TS_KEY } from '@/context/AuthContext';
 
 type Tab = 'login' | 'register';
@@ -61,14 +62,13 @@ export function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-sm mx-4 rounded-2xl overflow-hidden shadow-2xl border border-white/10"
-           style={{ background: 'linear-gradient(160deg, #1a1f3c 0%, #0f1429 100%)' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="w-full max-w-sm mx-4 rounded-3xl overflow-hidden border-2 border-white/10 bg-[#171a33]">
 
         {/* Header */}
         <div className="px-8 pt-8 pb-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-4xl">🐂</span>
+            <span className="text-4xl"><SpikeEmoji variant="happy" /></span>
           </div>
           <h1 className="text-2xl font-bold text-white">Market Spike</h1>
           <p className="text-sm text-slate-400 mt-1">Learn investing. Earn XP. Beat the market.</p>

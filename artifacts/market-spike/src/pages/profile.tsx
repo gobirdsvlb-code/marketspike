@@ -115,7 +115,7 @@ function CameraModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4">
       <div className="bg-card rounded-3xl shadow-2xl border border-border w-full max-w-sm p-6 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="font-black text-lg text-foreground">Take Your Photo</h2>
@@ -496,7 +496,6 @@ export default function Profile() {
           {/* ── Stats Sidebar ── */}
           <div className="space-y-6">
             <div className="bg-card border-2 border-border rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
-              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-yellow-400/10 to-transparent pointer-events-none" />
               <div className="w-16 h-16 rounded-2xl bg-yellow-400/15 border-2 border-yellow-400/30 flex items-center justify-center shrink-0">
                 <Coins className="w-8 h-8 text-yellow-500" />
               </div>
@@ -507,7 +506,6 @@ export default function Profile() {
             </div>
 
             <div className="bg-card border-2 border-border rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
-              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-primary/10 to-transparent pointer-events-none" />
               <div className="w-16 h-16 rounded-2xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center shrink-0">
                 <Zap className="w-8 h-8 text-primary" />
               </div>
@@ -518,7 +516,6 @@ export default function Profile() {
             </div>
 
             <div className="bg-card border-2 border-border rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden">
-              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-epic/10 to-transparent pointer-events-none" />
               <div className="w-16 h-16 rounded-2xl bg-epic/10 border-2 border-epic/20 flex items-center justify-center shrink-0">
                 <Trophy className="w-8 h-8 text-epic" />
               </div>

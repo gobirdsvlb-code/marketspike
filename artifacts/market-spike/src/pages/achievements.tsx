@@ -23,21 +23,21 @@ const RARITY_STYLES: Record<string, {
   card: string; icon: string; badge: string; glow: string; label: string;
 }> = {
   legendary: {
-    card: 'border-legendary/60 bg-gradient-to-br from-legendary/20 via-amber-50/50 to-card dark:via-amber-950/20',
+    card: 'border-legendary/60 bg-legendary/10',
     icon: 'bg-legendary/20 text-legendary',
     badge: 'bg-legendary text-black',
-    glow: 'shadow-[0_0_24px_rgba(251,191,36,0.35)]',
+    glow: '',
     label: '⭐ Legendary',
   },
   epic: {
-    card: 'border-epic/50 bg-gradient-to-br from-epic/20 via-purple-50/50 to-card dark:via-purple-950/20',
+    card: 'border-epic/50 bg-epic/10',
     icon: 'bg-epic/20 text-epic',
     badge: 'bg-epic text-white',
-    glow: 'shadow-[0_0_18px_rgba(192,132,252,0.25)]',
+    glow: '',
     label: '💜 Epic',
   },
   rare: {
-    card: 'border-primary/40 bg-gradient-to-br from-primary/15 via-blue-50/50 to-card dark:via-blue-950/20',
+    card: 'border-primary/40 bg-primary/10',
     icon: 'bg-primary/20 text-primary',
     badge: 'bg-primary text-white',
     glow: '',
@@ -69,7 +69,7 @@ export default function Achievements() {
       <div className="space-y-8 pb-8">
 
         {/* ── Header ── */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-legendary/20 via-epic/10 to-primary/10 border-2 border-legendary/30 rounded-3xl p-6 md:p-8">
+        <div className="relative overflow-hidden bg-tint border-2 border-border rounded-3xl p-6 md:p-8">
           <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-legendary/10" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-5">
             <div className="w-20 h-20 rounded-2xl bg-legendary/20 text-legendary flex items-center justify-center shrink-0 shadow-inner">
@@ -83,7 +83,7 @@ export default function Achievements() {
               <div className="max-w-md">
                 <div className="h-3 bg-muted rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-legendary via-amber-400 to-yellow-300"
+                    className="h-full rounded-full bg-legendary"
                     initial={{ width: 0 }}
                     animate={{ width: `${achProgress}%` }}
                     transition={{ duration: 1.2, ease: 'easeOut', delay: 0.2 }}

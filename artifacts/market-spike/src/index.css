@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 @layer theme, base, clerk, components, utilities;
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -62,8 +62,11 @@
   --color-loss: hsl(var(--loss));
   --color-epic: hsl(var(--epic));
   --color-legendary: hsl(var(--legendary));
+  --color-ink: hsl(var(--foreground));
+  --color-tint: hsl(var(--tint));
 
   --font-sans: 'Outfit', sans-serif;
+  --font-display: 'Fredoka', 'Outfit', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -72,6 +75,8 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Market Spike design tokens.
+   Flat colour, 2px borders, solid "underside" shadows. No gradients, no blur. */
 :root {
   --button-outline: rgba(0, 0, 0, 0.1);
   --badge-outline: rgba(0, 0, 0, 0.05);
@@ -79,59 +84,67 @@
   --elevate-1: rgba(0, 0, 0, 0.03);
   --elevate-2: rgba(0, 0, 0, 0.08);
 
-  --background: 220 20% 97%;
-  --foreground: 220 50% 10%;
-  --border: 220 20% 85%;
-  
-  --card: 0 0% 100%;
-  --card-foreground: 220 50% 10%;
-  --card-border: 220 20% 90%;
-  
-  --sidebar: 245 82% 65%;
-  --sidebar-foreground: 0 0% 100%;
-  --sidebar-border: 245 82% 55%;
-  --sidebar-primary: 0 0% 100%;
-  --sidebar-primary-foreground: 245 82% 65%;
-  --sidebar-accent: 245 82% 55%;
-  --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 245 82% 75%;
-  
-  --popover: 0 0% 100%;
-  --popover-foreground: 220 50% 10%;
-  --popover-border: 220 20% 85%;
-  
-  --primary: 245 82% 60%;
-  --primary-foreground: 0 0% 100%;
-  
-  --secondary: 180 100% 40%;
-  --secondary-foreground: 0 0% 100%;
-  
-  --muted: 220 20% 92%;
-  --muted-foreground: 220 15% 40%;
-  
-  --accent: 40 100% 55%;
-  --accent-foreground: 220 50% 10%;
-  
-  --destructive: 350 80% 55%;
-  --destructive-foreground: 0 0% 100%;
-  
-  --input: 220 20% 85%;
-  --ring: 245 82% 60%;
-  
-  --chart-1: 245 82% 60%;
-  --chart-2: 180 100% 40%;
-  --chart-3: 40 100% 55%;
-  --chart-4: 350 80% 55%;
-  --chart-5: 145 80% 40%;
+  --background: 0 0% 100%;
+  --foreground: 232 30% 18%;
+  --border: 230 22% 90%;
+  --tint: 236 100% 97%;
 
-  --gain: 145 80% 40%;
-  --loss: 350 80% 55%;
+  --card: 0 0% 100%;
+  --card-foreground: 232 30% 18%;
+  --card-border: 230 22% 90%;
+
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 232 30% 18%;
+  --sidebar-border: 230 22% 90%;
+  --sidebar-primary: 239 84% 67%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 236 100% 97%;
+  --sidebar-accent-foreground: 239 84% 60%;
+  --sidebar-ring: 239 84% 67%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 232 30% 18%;
+  --popover-border: 230 22% 90%;
+
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 177 100% 38%;
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 230 33% 96%;
+  --muted-foreground: 230 12% 42%;
+
+  --accent: 43 96% 56%;
+  --accent-foreground: 232 30% 18%;
+
+  --destructive: 349 89% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 230 22% 90%;
+  --ring: 239 84% 67%;
+
+  --chart-1: 239 84% 67%;
+  --chart-2: 177 100% 38%;
+  --chart-3: 43 96% 56%;
+  --chart-4: 349 89% 60%;
+  --chart-5: 142 71% 45%;
+
+  --gain: 142 71% 40%;
+  --loss: 349 89% 60%;
   --epic: 280 80% 60%;
-  --legendary: 45 100% 55%;
+  --legendary: 43 96% 56%;
 
   --radius: 1rem;
-  
-  /* Fallbacks for opaque borders */
+
+  /* 3D button undersides */
+  --under-primary: #4338ca;
+  --under-secondary: #00867f;
+  --under-accent: #d49a06;
+  --under-success: #15803d;
+  --under-danger: #be123c;
+  --under-neutral: #dfe2ee;
+
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
@@ -148,55 +161,53 @@
   --elevate-1: rgba(255, 255, 255, 0.04);
   --elevate-2: rgba(255, 255, 255, 0.09);
 
-  --background: 220 50% 5%;
+  --background: 232 36% 10%;
   --foreground: 0 0% 100%;
-  --border: 220 30% 20%;
-  
-  --card: 220 50% 8%;
+  --border: 232 26% 22%;
+  --tint: 232 30% 14%;
+
+  --card: 232 34% 14%;
   --card-foreground: 0 0% 100%;
-  --card-border: 220 30% 20%;
-  
-  --sidebar: 220 50% 8%;
+  --card-border: 232 26% 22%;
+
+  --sidebar: 232 36% 12%;
   --sidebar-foreground: 0 0% 100%;
-  --sidebar-border: 220 30% 20%;
-  --sidebar-primary: 245 82% 65%;
+  --sidebar-border: 232 26% 22%;
+  --sidebar-primary: 239 84% 70%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 30% 15%;
+  --sidebar-accent: 232 30% 18%;
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 245 82% 65%;
-  
-  --popover: 220 50% 8%;
+  --sidebar-ring: 239 84% 70%;
+
+  --popover: 232 34% 14%;
   --popover-foreground: 0 0% 100%;
-  --popover-border: 220 30% 20%;
-  
-  --primary: 245 82% 65%;
+  --popover-border: 232 26% 22%;
+
+  --primary: 239 84% 70%;
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 180 100% 45%;
+  --secondary: 177 100% 42%;
   --secondary-foreground: 0 0% 100%;
-  
-  --muted: 220 30% 15%;
-  --muted-foreground: 220 20% 60%;
-  
-  --accent: 40 100% 55%;
-  --accent-foreground: 220 50% 10%;
-  
-  --destructive: 350 80% 60%;
+  --muted: 232 26% 18%;
+  --muted-foreground: 230 18% 66%;
+  --accent: 43 96% 56%;
+  --accent-foreground: 232 30% 18%;
+  --destructive: 349 89% 64%;
   --destructive-foreground: 0 0% 100%;
-  
-  --input: 220 30% 20%;
-  --ring: 245 82% 65%;
-  
-  --chart-1: 245 82% 65%;
-  --chart-2: 180 100% 45%;
-  --chart-3: 40 100% 55%;
-  --chart-4: 350 80% 60%;
-  --chart-5: 145 80% 45%;
-  
-  --gain: 145 80% 45%;
-  --loss: 350 80% 60%;
-  --epic: 280 80% 65%;
-  --legendary: 45 100% 60%;
+  --input: 232 26% 22%;
+  --ring: 239 84% 70%;
+
+  --chart-1: 239 84% 70%;
+  --chart-2: 177 100% 42%;
+  --chart-3: 43 96% 56%;
+  --chart-4: 349 89% 64%;
+  --chart-5: 142 71% 48%;
+
+  --gain: 142 71% 48%;
+  --loss: 349 89% 64%;
+  --epic: 280 80% 68%;
+  --legendary: 43 96% 60%;
+
+  --under-neutral: #0b0d1c;
 }
 
 @layer base {
@@ -206,6 +217,10 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
 }
 
 .text-gain { color: hsl(var(--gain)); }
@@ -213,16 +228,64 @@
 .bg-gain { background-color: hsl(var(--gain)); }
 .bg-loss { background-color: hsl(var(--loss)); }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
+@layer components {
+  /* Chunky "pressable" surfaces: flat fill + solid underside that squashes on press. */
+  .btn-3d {
+    --btn-bg: hsl(var(--primary));
+    --btn-fg: #fff;
+    --btn-under: var(--under-primary);
+    --btn-border: transparent;
+    --lift: 4px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border: 2px solid var(--btn-border);
+    border-radius: 1rem;
+    box-shadow: 0 var(--lift) 0 var(--btn-under);
+    transform: translateY(0);
+    transition: transform 90ms ease-out, box-shadow 90ms ease-out, filter 120ms;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-3d:hover { filter: brightness(1.06); }
+  .btn-3d:active:not(:disabled),
+  .btn-3d[data-pressed='true'] {
+    transform: translateY(var(--lift));
+    box-shadow: 0 0 0 var(--btn-under);
+  }
+  .btn-3d:focus-visible { outline: 3px solid hsl(var(--ring) / 0.45); outline-offset: 3px; }
+  .btn-3d:disabled { cursor: not-allowed; --btn-bg: hsl(var(--muted)); --btn-fg: hsl(var(--muted-foreground)); --btn-under: var(--under-neutral); filter: none; }
+  .btn-3d.is-secondary { --btn-bg: hsl(var(--secondary)); --btn-under: var(--under-secondary); }
+  .btn-3d.is-accent { --btn-bg: hsl(var(--accent)); --btn-fg: hsl(var(--accent-foreground)); --btn-under: var(--under-accent); }
+  .btn-3d.is-success { --btn-bg: hsl(var(--gain)); --btn-under: var(--under-success); }
+  .btn-3d.is-danger { --btn-bg: hsl(var(--destructive)); --btn-under: var(--under-danger); }
+  .btn-3d.is-outline { --btn-bg: hsl(var(--card)); --btn-fg: hsl(var(--primary)); --btn-border: hsl(var(--border)); --btn-under: var(--under-neutral); }
+  .btn-3d.is-white { --btn-bg: #fff; --btn-fg: hsl(var(--primary)); --btn-under: #c7c9f5; }
 
-.dark .glass-card {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  .card-3d {
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--border));
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 0 hsl(var(--border));
+  }
+  .card-3d.is-pressable { transition: transform 90ms ease-out, box-shadow 90ms ease-out; cursor: pointer; }
+  .card-3d.is-pressable:hover { border-color: hsl(var(--primary) / 0.5); }
+  .card-3d.is-pressable:active { transform: translateY(4px); box-shadow: 0 0 0 hsl(var(--border)); }
+
+  /* legacy name kept for existing pages: now a flat card, not frosted glass */
+  .glass-card {
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--border));
+  }
 }
 
 @layer utilities {
@@ -232,7 +295,7 @@
     color: hsl(var(--muted-foreground));
     pointer-events: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -240,4 +303,9 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .font-display { font-family: var(--font-display); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-3d, .card-3d.is-pressable { transition: none; }
 }

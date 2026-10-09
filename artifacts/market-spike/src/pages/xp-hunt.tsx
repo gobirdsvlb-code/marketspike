@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { SpikeEmoji } from '../components/spike-mascot';
 import { Layout } from '@/components/layout';
 import { UpgradeBanner } from '@/components/UpgradeBanner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,9 +41,9 @@ const TIER_EMOJI:  Record<Tier, string> = { coin: '🪙', gem: '💎', trophy: '
 const TIER_LABEL:  Record<Tier, string> = { coin: 'Gold Coin', gem: 'Gem', trophy: 'Trophy' };
 const TIER_XP:     Record<Tier, number> = { coin: 75, gem: 125, trophy: 200 };
 const TIER_GRAD:   Record<Tier, string> = {
-  coin:   'from-yellow-500 to-amber-600',
-  gem:    'from-cyan-500 to-blue-600',
-  trophy: 'from-purple-500 to-pink-600',
+  coin:   'bg-amber-500',
+  gem:    'bg-cyan-500',
+  trophy: 'bg-purple-500',
 };
 const STAGE_COLOR: Record<string, string> = {
   easy:   'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -269,7 +270,7 @@ export default function XpHunt() {
 
         {/* ── MAP ── */}
         <div className="relative flex-1 min-h-0 overflow-hidden"
-          style={{ background: 'linear-gradient(160deg, #14532d 0%, #166534 50%, #15803d 100%)' }}>
+          style={{ background: '#166534' }}>
 
           {/* Grass dot texture */}
           <div className="absolute inset-0 opacity-[0.07]"
@@ -332,17 +333,17 @@ export default function XpHunt() {
               animate={(phase === 'moving' || phase === 'treasure') ? { y: [0, -5, 0] } : {}}
               transition={{ duration: 0.38, repeat: Infinity, ease: 'easeInOut' }}
             >
-              🐂
+              <SpikeEmoji />
             </motion.span>
           </motion.div>
 
           {/* Top HUD */}
           <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-            <div className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
+            <div className="bg-black/60 px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-yellow-400" />
               <span className="font-black text-sm text-yellow-400">{sessionXP} XP</span>
             </div>
-            <div className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
+            <div className="bg-black/60 px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
               <span className="text-sm font-black">{correctCount}/2</span>
               <span className="text-[11px] text-white/50 font-bold">correct</span>
             </div>
@@ -355,9 +356,9 @@ export default function XpHunt() {
                 initial={{ opacity: 0, scale: 0.88 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.88 }}
-                className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md"
+                className="absolute inset-0 z-40 flex items-center justify-center bg-black/60"
               >
-                <div className={`bg-gradient-to-br ${TIER_GRAD[treasureTier]} p-1 rounded-3xl shadow-2xl`}>
+                <div className={`${TIER_GRAD[treasureTier]} p-1 rounded-3xl`}>
                   <div className="bg-[#0d1117] rounded-[calc(1.5rem-4px)] px-10 py-8 text-center min-w-[220px]">
                     <motion.div
                       initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }}

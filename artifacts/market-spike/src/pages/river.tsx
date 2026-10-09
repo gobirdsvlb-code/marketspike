@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { SpikeEmoji } from '../components/spike-mascot';
 import { Layout } from '@/components/layout';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGetRiverCrossing, useUseLife, useGetCurrentUser, getGetCurrentUserQueryKey, getGetRiverCrossingQueryKey } from '@workspace/api-client-react';
@@ -30,10 +31,10 @@ const STONE_W = 96;
 const STONE_H = 60;
 
 // Single stone colour palette (dark wet river rock, same for all)
-const STONE_BG_IDLE     = 'radial-gradient(ellipse at 28% 26%, rgba(255,255,255,0.20) 0%, transparent 40%), radial-gradient(ellipse at 65% 68%, rgba(0,0,0,0.40) 0%, transparent 52%), radial-gradient(ellipse at 50% 50%, #6b6258 0%, #38322c 100%)';
-const STONE_BG_CURRENT  = 'radial-gradient(ellipse at 28% 26%, rgba(255,255,255,0.22) 0%, transparent 40%), radial-gradient(ellipse at 65% 68%, rgba(0,0,0,0.40) 0%, transparent 52%), radial-gradient(ellipse at 50% 50%, #7a6e62 0%, #42382e 100%)';
-const STONE_BG_DONE     = 'radial-gradient(ellipse at 28% 26%, rgba(255,255,255,0.18) 0%, transparent 40%), radial-gradient(ellipse at 65% 68%, rgba(0,0,0,0.30) 0%, transparent 52%), linear-gradient(150deg, #4ade80 0%, #16a34a 60%, #14532d 100%)';
-const STONE_BG_WRONG    = 'radial-gradient(ellipse at 28% 26%, rgba(255,255,255,0.22) 0%, transparent 40%), radial-gradient(ellipse at 65% 68%, rgba(0,0,0,0.45) 0%, transparent 52%), radial-gradient(ellipse at 50% 50%, #ef4444 0%, #991b1b 100%)';
+const STONE_BG_IDLE     = '#6b6258';
+const STONE_BG_CURRENT  = '#8a7c6c';
+const STONE_BG_DONE     = '#22c55e';
+const STONE_BG_WRONG    = '#ef4444';
 
 // Per-stone gentle bob — same amplitude, slight phase shift
 const FLOAT_PARAMS = [
@@ -285,7 +286,7 @@ export default function River() {
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
                   >
-                    🐂
+                    <SpikeEmoji />
                   </motion.span>
                   <span className="text-3xl uppercase tracking-widest">Play</span>
                   <span className="text-base font-bold opacity-70 uppercase tracking-wider">River Crossing</span>
@@ -411,7 +412,7 @@ export default function River() {
         <AnimatePresence>
           {gameState === 'completed' && (
             <motion.div
-              className="absolute inset-0 z-50 bg-background/90 backdrop-blur-md flex items-center justify-center p-6"
+              className="absolute inset-0 z-50 bg-background/90 flex items-center justify-center p-6"
               style={{ position: 'fixed' }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             >
@@ -472,7 +473,7 @@ export default function River() {
                           try { localStorage.setItem(LEVEL_KEY, String(next)); } catch {}
                           handleRestart();
                         }}
-                        className={`py-3 font-black uppercase tracking-widest rounded-xl transition-colors active:scale-95 text-sm border-2 text-white ${RIVER_LEVELS[riverLevel].bg} ${RIVER_LEVELS[riverLevel].border} bg-gradient-to-br from-epic to-accent hover:opacity-90`}
+                        className={`py-3 font-black uppercase tracking-widest rounded-xl transition-colors active:scale-95 text-sm border-2 text-white ${RIVER_LEVELS[riverLevel].bg} ${RIVER_LEVELS[riverLevel].border} bg-epic hover:opacity-90`}
                       >
                         Go to {RIVER_LEVELS[riverLevel].label}! ⭐
                       </button>
@@ -707,7 +708,7 @@ function RiverScene({ crossing, currentQuestionIdx, gameState, isDrifting, lives
 
   return (
     <div className="relative flex-1 min-h-0 overflow-hidden flex"
-      style={{ background: 'linear-gradient(180deg, #0d1117 0%, #0a1628 40%, #0d1f35 60%, #0d1117 100%)' }}
+      style={{ background: '#0b1a2e' }}
     >
       {/* Water ripples — tinted dark teal */}
       <div className="absolute inset-0 opacity-30"
@@ -716,7 +717,7 @@ function RiverScene({ crossing, currentQuestionIdx, gameState, isDrifting, lives
         style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 70px, rgba(56,189,248,0.18) 70px, rgba(56,189,248,0.18) 72px)', animation: 'waterFlow 5s linear infinite reverse' }} />
 
       {/* Lives — top-right */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-background/85 backdrop-blur-md px-3 py-2 rounded-2xl border-2 border-border shadow-lg">
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-background/85 px-3 py-2 rounded-2xl border-2 border-border shadow-lg">
         <span className="text-xs font-black uppercase text-muted-foreground mr-1">Lives</span>
         {[...Array(5)].map((_, i) => (
           <motion.div key={i} initial={false} animate={{ scale: i < lives ? 1 : 0.75, opacity: i < lives ? 1 : 0.3 }}>
@@ -727,9 +728,8 @@ function RiverScene({ crossing, currentQuestionIdx, gameState, isDrifting, lives
 
       {/* Left bank */}
       <div className="w-[10%] h-full border-r-4 border-green-700/40 relative shrink-0"
-        style={{ background: 'linear-gradient(90deg, #16a34a 60%, #15803d)' }}>
+        style={{ background: '#16a34a' }}>
         <div className="absolute inset-0 bg-black/15" />
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/25 to-transparent" />
         <div className="absolute inset-2 opacity-30" style={{ backgroundImage: 'radial-gradient(circle, #166534 1px, transparent 1px)', backgroundSize: '8px 8px' }} />
         {/* Bull on left bank when idle / no game active */}
         {(gameState === 'idle') && (
@@ -739,7 +739,7 @@ function RiverScene({ crossing, currentQuestionIdx, gameState, isDrifting, lives
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            🐂
+            <SpikeEmoji />
           </motion.div>
         )}
       </div>
@@ -808,20 +808,6 @@ function RiverScene({ crossing, currentQuestionIdx, gameState, isDrifting, lives
                 : { duration: fp.dur, repeat: Infinity, ease: 'easeInOut', delay: idx * 0.2 }
               }
             >
-              {/* Wet sheen catch-light */}
-              <div className="absolute pointer-events-none" style={{
-                top: '10%', left: '14%', width: '44%', height: '30%',
-                borderRadius: '50%',
-                background: 'radial-gradient(ellipse, rgba(255,255,255,0.30) 0%, transparent 100%)',
-                transform: 'rotate(-18deg)',
-              }} />
-
-              {/* Dark shadow patch lower-right */}
-              <div className="absolute pointer-events-none" style={{
-                bottom: '10%', right: '12%', width: '38%', height: '26%',
-                borderRadius: '50%',
-                background: 'radial-gradient(ellipse, rgba(0,0,0,0.32) 0%, transparent 100%)',
-              }} />
 
               {/* SVG crack lines */}
               {state !== 'completed' && (
@@ -863,7 +849,7 @@ function RiverScene({ crossing, currentQuestionIdx, gameState, isDrifting, lives
                     y: { duration: 1.3, repeat: Infinity, ease: 'easeInOut', delay: 0.2 },
                   }}
                 >
-                  🐂
+                  <SpikeEmoji />
                 </motion.div>
               )}
             </motion.div>
@@ -873,9 +859,8 @@ function RiverScene({ crossing, currentQuestionIdx, gameState, isDrifting, lives
 
       {/* Right bank */}
       <div className="w-[10%] h-full border-l-4 border-green-700/40 relative shrink-0"
-        style={{ background: 'linear-gradient(270deg, #16a34a 60%, #15803d)' }}>
+        style={{ background: '#16a34a' }}>
         <div className="absolute inset-0 bg-black/15" />
-        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/25 to-transparent" />
         <div className="absolute inset-2 opacity-30" style={{ backgroundImage: 'radial-gradient(circle, #166534 1px, transparent 1px)', backgroundSize: '8px 8px' }} />
         {/* Goal */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1">

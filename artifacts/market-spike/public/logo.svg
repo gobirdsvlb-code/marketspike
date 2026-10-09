@@ -1,5 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
-  <rect width="80" height="80" rx="20" fill="#6366f1"/>
-  <text x="40" y="52" font-size="38" text-anchor="middle" dominant-baseline="middle">🐂</text>
-  <text x="40" y="68" font-size="9" font-family="system-ui,sans-serif" font-weight="900" text-anchor="middle" fill="white" letter-spacing="1">SPIKE</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <rect width="200" height="200" rx="46" fill="#fbbf24"/>
+  <path d="M44 74 C14 74 6 40 18 18 C24 40 46 46 62 50 Z" fill="#fff"/>
+  <path d="M156 74 C186 74 194 40 182 18 C176 40 154 46 138 50 Z" fill="#fff"/>
+  <ellipse cx="30" cy="96" rx="20" ry="12" transform="rotate(-18 30 96)" fill="#4338ca"/>
+  <ellipse cx="170" cy="96" rx="20" ry="12" transform="rotate(18 170 96)" fill="#4338ca"/>
+  <path d="M38 88 C38 40 162 40 162 88 L162 128 C162 164 134 184 100 184 C66 184 38 164 38 128 Z" fill="#6366f1"/>
+  <path d="M84 52 C84 36 100 30 108 40 C114 34 126 40 120 54 C108 50 96 50 84 52 Z" fill="#4338ca"/>
+  <ellipse cx="100" cy="146" rx="42" ry="30" fill="#ffe3d9"/>
+  <ellipse cx="84" cy="136" rx="5.5" ry="7.5" fill="#1e2140"/>
+  <ellipse cx="116" cy="136" rx="5.5" ry="7.5" fill="#1e2140"/>
+  <circle cx="72" cy="100" r="18" fill="#fff"/><circle cx="128" cy="100" r="18" fill="#fff"/>
+  <circle cx="76" cy="102" r="9" fill="#1e2140"/><circle cx="124" cy="102" r="9" fill="#1e2140"/>
+  <circle cx="79" cy="98" r="3.2" fill="#fff"/><circle cx="127" cy="98" r="3.2" fill="#fff"/>
+  <path d="M86 152 Q100 164 114 152" stroke="#1e2140" stroke-width="5" fill="none" stroke-linecap="round"/>
 </svg>

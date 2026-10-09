@@ -105,7 +105,7 @@ const clerkAppearance = {
 
 function SignInPage() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-tint px-4">
       <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
     </div>
   );
@@ -113,7 +113,7 @@ function SignInPage() {
 
 function SignUpPage() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-tint px-4">
       <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
     </div>
   );
@@ -129,7 +129,7 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
     return (
       <div className="relative min-h-[100dvh]">
         <Component />
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-background/70 backdrop-blur-sm px-6 md:pl-64">
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-background/70 px-6 md:pl-64">
           <div className="bg-background rounded-3xl shadow-2xl border border-border p-10 max-w-sm w-full text-center flex flex-col items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">

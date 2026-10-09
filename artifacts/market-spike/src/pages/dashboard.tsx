@@ -39,7 +39,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className={`md:col-span-2 p-8 rounded-3xl text-white relative overflow-hidden ${isPositive ? 'bg-gradient-to-br from-primary to-indigo-600' : 'bg-gradient-to-br from-destructive to-rose-700'}`}
+            className={`md:col-span-2 p-8 rounded-3xl text-white relative overflow-hidden ${isPositive ? 'bg-primary' : 'bg-destructive'}`}
           >
             <div className="relative z-10">
               <h2 className="font-bold opacity-80 mb-1 uppercase tracking-wider text-sm">Portfolio Value</h2>
@@ -47,7 +47,7 @@ export default function Dashboard() {
                 <AnimatedNumber value={summary?.totalValue || 0} format="currency" />
               </div>
               <div className="flex gap-4">
-                <div className="bg-black/20 rounded-lg px-4 py-2 backdrop-blur-md">
+                <div className="bg-black/20 rounded-lg px-4 py-2">
                   <div className="text-xs opacity-80 font-bold uppercase mb-1">Total Return</div>
                   <div className={`font-mono font-bold text-lg flex items-center gap-1 ${isPositive ? 'text-green-300' : 'text-red-300'}`}>
                     {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
@@ -57,7 +57,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                 </div>
-                <div className="bg-black/20 rounded-lg px-4 py-2 backdrop-blur-md">
+                <div className="bg-black/20 rounded-lg px-4 py-2">
                   <div className="text-xs opacity-80 font-bold uppercase mb-1">Cash Balance</div>
                   <div className="font-mono font-bold text-lg">
                     <AnimatedNumber value={summary?.cashBalance || 0} format="currency" />

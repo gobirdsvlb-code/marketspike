@@ -1,4 +1,5 @@
 import React from 'react';
+import { SpikeEmoji } from '../components/spike-mascot';
 import { Layout } from '@/components/layout';
 import { UpgradeBanner } from '@/components/UpgradeBanner';
 import {
@@ -103,7 +104,7 @@ export default function Home() {
             <motion.div
               whileTap={{ scale: 0.98 }}
               className="relative rounded-3xl overflow-hidden cursor-pointer select-none"
-              style={{ background: 'linear-gradient(160deg, #15803d 0%, #16a34a 40%, #166534 100%)' }}
+              style={{ background: '#16a34a', boxShadow: '0 6px 0 #166534' }}
             >
               {/* Subtle texture circles */}
               <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full bg-white/5" />
@@ -143,7 +144,7 @@ export default function Home() {
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   className="text-7xl mb-4 drop-shadow-2xl"
                 >
-                  🐂
+                  <SpikeEmoji />
                 </motion.div>
 
                 {/* Title */}
